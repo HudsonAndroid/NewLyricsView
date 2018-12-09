@@ -1,6 +1,9 @@
 package com.hudson.newlyricsview.lyrics.schedule;
 
 import com.hudson.newlyricsview.lyrics.schedule.strategy.AbsScheduleWork;
+import com.hudson.newlyricsview.lyrics.view.ILyricsView;
+
+import java.util.List;
 
 /**
  * 歌词定期任务（策略模式）
@@ -12,28 +15,32 @@ import com.hudson.newlyricsview.lyrics.schedule.strategy.AbsScheduleWork;
  */
 public class LyricsSchedule implements AbsScheduleWork.IScheduleWorkListener {
     private AbsScheduleWork mScheduleWork;
-    private int mCurPosition = 0;
-    private int mMaxPosition;
+    private ILyricsView mLyricsView;
 
-    public LyricsSchedule(AbsScheduleWork work){
+    public LyricsSchedule(AbsScheduleWork work,ILyricsView lyricsView){
         mScheduleWork = work;
         mScheduleWork.setScheduleWorkListener(this);
+        mLyricsView = lyricsView;
+    }
+
+    public void setScheduleTimeList(List<Long> timeList){
+        mScheduleWork.setTimeList(timeList);
     }
 
     @Override
-    public void onNextWork() {
-        mCurPosition ++;
+    public void onNextWork(){
+        mLyricsView.next();
     }
 
     public int getCurPosition() {
-        return mCurPosition;
+        return mScheduleWork.getCurrentIndex();
     }
 
     public void pause(){
-
+        mScheduleWork.pause();
     }
 
-    public void play(){
-        mScheduleWork.start();
+    public void play(long currentTime){
+        mScheduleWork.start(currentTime);
     }
 }

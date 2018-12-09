@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
 
+import java.util.List;
+
 
 /**
  * Created by hpz on 2018/12/7.
@@ -28,7 +30,12 @@ public class EmptyLyricsView extends TextView implements ILyricsView<AbsLyrics> 
     }
 
     @Override
-    public void play(int position) {
+    public void setLyrics(List<AbsLyrics> lyrics, List<Long> timeList) {
+
+    }
+
+    @Override
+    public void play(long currentProgress) {
 
     }
 

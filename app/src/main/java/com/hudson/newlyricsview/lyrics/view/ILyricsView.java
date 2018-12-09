@@ -4,17 +4,21 @@ import android.view.View;
 
 import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
 
+import java.util.List;
+
 
 /**
  * Created by hpz on 2018/12/6.
  */
 public interface ILyricsView<T extends AbsLyrics> {
 
+    void setLyrics(List<T> lyrics,List<Long> timeList);
+
     /**
      * 播放歌词
-     * @param position
+     * @param currentProgress
      */
-    void play(int position);
+    void play(long currentProgress);
 
     /**
      * 准备状态
