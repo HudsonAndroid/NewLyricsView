@@ -46,7 +46,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     public RecyclerLyricsView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mLyricsSchedule = new LyricsSchedule(new HandlerStrategy(),this);
-        mLayoutManager = new LinearLayoutManager(getContext());
+        mLayoutManager = new CenterLayoutManager(getContext());
         mLayoutManager.setOrientation(VERTICAL);
         setLayoutManager(mLayoutManager);
         mAdapter = new LyricsAdapter(getContext());
@@ -72,6 +72,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     @Override
     public void play(long currentProgress) {
         mLyricsSchedule.play(currentProgress);
+        mLayoutManager.scrollToPositionWithOffset(mLyricsSchedule.getCurPosition(),getHeight()/2);
     }
 
     @Override
@@ -142,13 +143,16 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     }
 
     private void scrollToFocus(){
-        int curPosition = mLyricsSchedule.getCurPosition();
-        int visibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
-        if(curPosition < visibleItemPosition){
-            smoothScrollBy(0,(curPosition - visibleItemPosition-4)*mItemHeight);
-        }else{
-            smoothScrollBy(0,(curPosition - visibleItemPosition+1)*mItemHeight);
-        }
+        int position = mLyricsSchedule.getCurPosition() + 1;
+        position = position >= mLyrics.size() ? mLyrics.size()-1 : position;
+        mLayoutManager.smoothScrollToPosition(this,null, position);
+//        int curPosition = mLyricsSchedule.getCurPosition();
+//        int visibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+//        if(curPosition < visibleItemPosition){
+//            smoothScrollBy(0,(curPosition - visibleItemPosition-4)*mItemHeight);
+//        }else{
+//            smoothScrollBy(0,(curPosition - visibleItemPosition+1)*mItemHeight);
+//        }
     }
 
     @Override
@@ -161,7 +165,6 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-
                 mHandler.sendEmptyMessageDelayed(MSG_ADJUST_LYRICS,USER_INFECTION_TIME);
                 mIsInterrupt = false;
                 break;
