@@ -50,11 +50,6 @@ public class EmptyLyricsView extends TextView implements ILyricsView<AbsLyrics> 
     }
 
     @Override
-    public void initial() {
-
-    }
-
-    @Override
     public AbsLyrics getCurLyrics() {
         return null;
     }

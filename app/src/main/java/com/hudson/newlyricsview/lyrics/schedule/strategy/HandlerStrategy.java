@@ -19,7 +19,7 @@ public class HandlerStrategy extends AbsScheduleWork {
     }
 
     @Override
-    public void pause() {
+    public void pause(long pauseTime) {
         end();
     }
 

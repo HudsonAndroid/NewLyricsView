@@ -33,11 +33,6 @@ public interface ILyricsView<T extends AbsLyrics> {
     void play();
 
     /**
-     * 准备状态
-     */
-    void initial();
-
-    /**
      * 获取当前歌词
      * @return
      */

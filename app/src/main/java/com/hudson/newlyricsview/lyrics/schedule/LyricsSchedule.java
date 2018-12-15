@@ -36,16 +36,20 @@ public class LyricsSchedule implements AbsScheduleWork.IScheduleWorkListener {
         return mScheduleWork.getCurrentIndex();
     }
 
-    public int getCurPosition(long time){
-        return mScheduleWork.getCurrentIndex(time);
-    }
-
-    public void pause(){
-        mScheduleWork.pause();
+    public void pause(long pauseTime){
+        mScheduleWork.pause(pauseTime);
     }
 
     public void play(long currentTime){
         mScheduleWork.start(currentTime);
+    }
+
+    public void setStartTime(long startTime){
+        mScheduleWork.setStartTime(startTime);
+    }
+
+    public void play(){
+        mScheduleWork.start();
     }
 
     public void end(){

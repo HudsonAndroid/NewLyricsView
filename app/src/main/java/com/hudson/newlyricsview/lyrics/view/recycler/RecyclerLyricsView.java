@@ -24,7 +24,7 @@ import java.util.List;
  * Created by hpz on 2018/12/6.
  */
 public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsLyrics> {
-    private static final int USER_INFECTION_TIME = 3000;
+    private static final int USER_INFECTION_TIME = 3000;//ms
     private static final int MSG_ADJUST_LYRICS = 1;
     private static final int DEFAULT_LYRICS_COUNT = 5;
     private int mItemHeight;//px
@@ -37,7 +37,6 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     private LyricsViewHandler mHandler;
     private int mLyricsCount;
     private TextView mLastView;
-    private long mNextStartTime;
 
     public RecyclerLyricsView(Context context) {
         this(context, null);
@@ -89,8 +88,8 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
         mLyrics.addAll(lyrics);
         mAdapter.refreshList(lyrics);
         mLyricsSchedule.setScheduleTimeList(timeList);
-        mNextStartTime = startTime;
-        int initialPosition = mLyricsSchedule.getCurPosition(startTime);
+        mLyricsSchedule.setStartTime(startTime);
+        int initialPosition = mLyricsSchedule.getCurPosition();
         initStartScrollPosition(initialPosition);
         mAdapter.setCurPosition(initialPosition);
     }
@@ -130,18 +129,13 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     }
 
     public void play(){
-        play(mNextStartTime);
+        mLyricsSchedule.play();
     }
 
     @Override
     public void play(long currentProgress) {
         mLyricsSchedule.play(currentProgress);
         initStartScrollPosition(mLyricsSchedule.getCurPosition());
-    }
-
-    @Override
-    public void initial() {
-
     }
 
     @Override
@@ -199,8 +193,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
 
     @Override
     public void pause(long pauseTime) {
-        mNextStartTime = pauseTime;
-        mLyricsSchedule.pause();
+        mLyricsSchedule.pause(pauseTime);
     }
 
     @Override
@@ -210,11 +203,8 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
 
     private void scrollToFocus(){
         //需要加上除了普通歌词外的头布局数
-        int curPosition = mLyricsSchedule.getCurPosition();
-        if(!mLyricsSchedule.isWorkRunning() && !mLyricsSchedule.isEndWork()){
-            curPosition = mLyricsSchedule.getCurPosition(mNextStartTime);
-        }
-        mLayoutManager.smoothScrollToPosition(this,null, curPosition + mAdapter.getLyricsIndexOffset());
+        mLayoutManager.smoothScrollToPosition(this,null,
+                mLyricsSchedule.getCurPosition() + mAdapter.getLyricsIndexOffset());
     }
 
     @Override

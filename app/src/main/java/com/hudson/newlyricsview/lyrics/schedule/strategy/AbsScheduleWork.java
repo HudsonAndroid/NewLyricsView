@@ -14,6 +14,7 @@ public abstract class AbsScheduleWork {
     protected final List<Long> mTimeList = new ArrayList<>();
     protected int mCurrentIndex;
     private boolean mIsRunning = false;
+    private long mStartTime = 0;
 
     public AbsScheduleWork(){
     }
@@ -27,6 +28,11 @@ public abstract class AbsScheduleWork {
         mTimeList.addAll(timeList);
     }
 
+    public void setStartTime(long startTime) {
+        mStartTime = startTime;
+        mCurrentIndex = getCurrentIndex(startTime);
+    }
+
     public void setScheduleWorkListener(IScheduleWorkListener listener) {
         mListener = listener;
     }
@@ -35,21 +41,34 @@ public abstract class AbsScheduleWork {
         void onNextWork();
     }
 
+    /**
+     * 从指定位置开始播放
+     * @param startTime
+     */
     public void start(long startTime){
+        mCurrentIndex = getCurrentIndex(startTime);
+        commonStart(startTime);
+    }
+
+    private void commonStart(long startTime){
         if(mTimeList.size() == 0){
             throw new ScheduleInitialStateInvalidException("time list is empty!");
         }
         if(mListener == null){
             throw new ScheduleInitialStateInvalidException("have you ever set the listener of schedule work?");
         }
-        mCurrentIndex = getCurrentIndex(startTime);
         if(mCurrentIndex != mTimeList.size()){
             startSchedule(startTime);
             mIsRunning = true;
         }
     }
 
-    public void pause(){
+    public void start(){
+        commonStart(mStartTime);
+    }
+
+    public void pause(long pauseTime){
+        mStartTime = pauseTime;
         mIsRunning = false;
     }
     public void end(){
