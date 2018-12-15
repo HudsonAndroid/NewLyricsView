@@ -9,12 +9,35 @@
     tools:context=".MainActivity">
 
     <Button
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="开始"
+        android:text="播放"
         android:textColor="#000"
         android:onClick="start"
         android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:layout_alignParentBottom="true"
+        android:text="暂停"
+        android:textColor="#000"
+        android:onClick="pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="快进"
+        android:textColor="#000"
+        android:onClick="forward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:layout_alignParentRight="true"
+        android:text="快退"
+        android:textColor="#000"
+        android:onClick="backward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

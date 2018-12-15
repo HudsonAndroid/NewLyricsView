@@ -60,21 +60,17 @@ public class LyricsController{
     public void play(int position) {
         mLyricsView.play(position);
     }
-    
-    public void initial() {
-        mLyricsView.initial();
-    }
 
     public AbsLyrics getCurLyrics() {
         return mLyricsView.getCurLyrics();
     }
 
-    public void forward(long timeOffset) {
-        mLyricsView.forward(timeOffset);
+    public void forward(long curProgress,long timeOffset) {
+        mLyricsView.forward(curProgress,timeOffset);
     }
 
-    public void backward(long timeOffset) {
-        mLyricsView.backward(timeOffset);
+    public void backward(long curProgress,long timeOffset) {
+        mLyricsView.backward(curProgress,timeOffset);
     }
 
     public void pause(long time) {

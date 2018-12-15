@@ -28,4 +28,16 @@ public class MainActivity extends AppCompatActivity {
     public void start(View v){
         mLyricsController.play();
     }
+
+    public void pause(View v){
+//        mLyricsController.pause();
+    }
+
+    public void forward(View v){
+//        mLyricsController.forward();
+    }
+
+    public void backward(View v){
+//        mLyricsController.backward();
+    }
 }

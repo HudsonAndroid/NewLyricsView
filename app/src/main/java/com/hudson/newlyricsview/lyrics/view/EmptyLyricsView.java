@@ -56,12 +56,12 @@ public class EmptyLyricsView extends TextView implements ILyricsView<AbsLyrics> 
 
 
     @Override
-    public void forward(long timeOffset) {
+    public void forward(long currentProgress,long timeOffset) {
 
     }
 
     @Override
-    public void backward(long timeOffset) {
+    public void backward(long currentProgress,long timeOffset) {
 
     }
 

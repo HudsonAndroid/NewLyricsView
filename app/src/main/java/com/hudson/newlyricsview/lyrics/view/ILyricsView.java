@@ -40,15 +40,17 @@ public interface ILyricsView<T extends AbsLyrics> {
 
     /**
      * 快进
+     * @param currentProgress
      * @param timeOffset
      */
-    void forward(long timeOffset);
+    void forward(long currentProgress,long timeOffset);
 
     /**
      * 快退
+     * @param currentProgress
      * @param timeOffset
      */
-    void backward(long timeOffset);
+    void backward(long currentProgress,long timeOffset);
 
     /**
      * 下一句

@@ -22,7 +22,7 @@ import java.util.List;
 public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private static final int TYPE_TOP = 1;
     private static final int TYPE_BOTTOM = 2;
-    protected List<AbsLyrics> mDatas = new ArrayList<>();
+    protected final List<AbsLyrics> mDatas = new ArrayList<>();
     protected Context mContext;
     private int mCurPosition;
     private int mTopViewHeight;
@@ -60,15 +60,15 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     @NonNull
     @Override
     public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if(viewType == TYPE_TOP){
+        if(viewType == TYPE_TOP){//headerView
             View itemView = new TextView(parent.getContext());
             itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mTopViewHeight));
             return new EmptyViewHolder(itemView);
-        }else if(viewType == TYPE_BOTTOM){
+        }else if(viewType == TYPE_BOTTOM){//bottomView
             View itemView = new TextView(parent.getContext());
             itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mBottomViewHeight));
             return new EmptyViewHolder(itemView);
-        }else{
+        }else{//normalLyricsItem
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_lyrics, parent, false);
             itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mLyricsItemHeight));
             return new LyricsViewHolder(itemView);

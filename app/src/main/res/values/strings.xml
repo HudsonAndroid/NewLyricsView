@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">NewLyricsView</string>
+    <string name="lyrics_tips_forward">歌词快进%s毫秒</string>
+    <string name="lyrics_tips_backward">歌词后退%s毫秒</string>
 </resources>

@@ -10,7 +10,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.hudson.newlyricsview.R;
 import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
 import com.hudson.newlyricsview.lyrics.schedule.LyricsSchedule;
 import com.hudson.newlyricsview.lyrics.schedule.strategy.HandlerStrategy;
@@ -37,6 +39,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     private LyricsViewHandler mHandler;
     private int mLyricsCount;
     private TextView mLastView;
+    private long mLyricsTimeOffset;//歌词播放快进快退offset
 
     public RecyclerLyricsView(Context context) {
         this(context, null);
@@ -148,13 +151,21 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     }
 
     @Override
-    public void forward(long timeOffset) {
+    public void forward(long currentProgress,long timeOffset) {
+        mLyricsTimeOffset += timeOffset;
+        mLyricsSchedule.play(currentProgress + mLyricsTimeOffset);
+        showToast(getResources().getString(R.string.lyrics_tips_forward,timeOffset+""));
+    }
 
+    private void showToast(String tips){
+        Toast.makeText(getContext(),tips,Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void backward(long timeOffset) {
-
+    public void backward(long currentProgress,long timeOffset) {
+        mLyricsTimeOffset -= timeOffset;
+        mLyricsSchedule.play(currentProgress + mLyricsTimeOffset);
+        showToast(getResources().getString(R.string.lyrics_tips_backward,timeOffset+""));
     }
 
     @Override
