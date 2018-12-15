@@ -6,9 +6,9 @@ import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
@@ -26,7 +26,8 @@ import java.util.List;
 public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsLyrics> {
     private static final int USER_INFECTION_TIME = 3000;
     private static final int MSG_ADJUST_LYRICS = 1;
-    private int mItemHeight = 100;//px
+    private static final int DEFAULT_LYRICS_COUNT = 5;
+    private int mItemHeight;//px
     private LyricsSchedule mLyricsSchedule;
     private final List<AbsLyrics> mLyrics = new ArrayList<>();
     private LinearLayoutManager mLayoutManager;
@@ -34,6 +35,9 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     private boolean mIsUserActive = false;
     private boolean mIsInterrupt = false;
     private LyricsViewHandler mHandler;
+    private int mLyricsCount;
+    private TextView mLastView;
+    private long mNextStartTime;
 
     public RecyclerLyricsView(Context context) {
         this(context, null);
@@ -49,30 +53,90 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
         mLayoutManager = new CenterLayoutManager(getContext());
         mLayoutManager.setOrientation(VERTICAL);
         setLayoutManager(mLayoutManager);
-        mAdapter = new LyricsAdapter(getContext());
         mHandler = new LyricsViewHandler(this);
+        mAdapter = new LyricsAdapter(getContext());
+        setAdapter(mAdapter);
+    }
+
+    /**
+     * 设置一页展示的歌词个数
+     * 控件将会将外界传入的值转为奇数
+     * @param count
+     */
+    @Override
+    public int setLyricsCount(int count){
+        if(count<=0){
+            return DEFAULT_LYRICS_COUNT;
+        }
+        mLyricsCount = count/2*2+1;
+        return mLyricsCount;
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mAdapter.setEmptyViewHeight((h + mItemHeight)/2,(h - mItemHeight)/2);
-//        mCount = h/mItemHeight;
-        setAdapter(mAdapter);
+        if(mLyricsCount == 0){
+            mLyricsCount = DEFAULT_LYRICS_COUNT;
+        }
+        mItemHeight = h / mLyricsCount;
+        mAdapter.setViewHeight(mItemHeight,
+                (h + mItemHeight)/2,(h - mItemHeight)/2);
     }
 
     @Override
-    public void setLyrics(List<AbsLyrics> lyrics, List<Long> timeList) {
+    public void setLyrics(List<AbsLyrics> lyrics, List<Long> timeList,long startTime) {
         mLyrics.clear();
         mLyrics.addAll(lyrics);
-        mLyricsSchedule.setScheduleTimeList(timeList);
         mAdapter.refreshList(lyrics);
+        mLyricsSchedule.setScheduleTimeList(timeList);
+        mNextStartTime = startTime;
+        int initialPosition = mLyricsSchedule.getCurPosition(startTime);
+        initStartScrollPosition(initialPosition);
+        mAdapter.setCurPosition(initialPosition);
+    }
+
+    /**
+     * 初始状态下滑动到指定位置
+     * @param initialPosition
+     */
+    public void initStartScrollPosition(final int initialPosition){
+        int height = getHeight();
+        if(height != 0){
+            scrollToTarget(initialPosition);
+        }else{
+            getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    scrollToTarget(initialPosition);
+                    invalidate();
+                }
+            });
+        }
+    }
+
+    private void scrollToTarget(int curPosition){
+        int offset = getHeight() / 2 / mItemHeight;
+        int firstVisiblePosition = mLayoutManager.findFirstVisibleItemPosition();
+        int position;
+        if(curPosition > firstVisiblePosition){
+            position = curPosition + offset;
+        }else{
+            position = curPosition - offset;
+        }
+        mLayoutManager.scrollToPosition(position+mAdapter.getLyricsIndexOffset());
+        mAdapter.setCurPosition(curPosition);
+        focusCurrentItem(curPosition);
+    }
+
+    public void play(){
+        play(mNextStartTime);
     }
 
     @Override
     public void play(long currentProgress) {
         mLyricsSchedule.play(currentProgress);
-        mLayoutManager.scrollToPositionWithOffset(mLyricsSchedule.getCurPosition(),getHeight()/2);
+        initStartScrollPosition(mLyricsSchedule.getCurPosition());
     }
 
     @Override
@@ -82,7 +146,11 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
 
     @Override
     public AbsLyrics getCurLyrics() {
-        return mLyrics.get(mLyricsSchedule.getCurPosition());
+        int curPosition = mLyricsSchedule.getCurPosition();
+        if(curPosition >=0 && curPosition < mLyrics.size()){
+            return mLyrics.get(curPosition);
+        }
+        return null;
     }
 
     @Override
@@ -97,34 +165,31 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
 
     @Override
     public void next() {
-        int curPosition = mLyricsSchedule.getCurPosition();
-
-//        View firstView = mLayoutManager.findViewByPosition(visibleItemPosition);
-//        if(firstView != null){
-//            Log.e("hudson","当前的top相对view是"+firstView.getTop());
-//        }
         if(!mIsUserActive){
             if(isNeedAdjust){
                 isNeedAdjust = false;
-                Log.e("hudson","调整了");
-//                int position;
                 scrollToFocus();
-//                if(visibleItemPosition > curPosition){
-//                    position = curPosition - mCount / 2 + mAdapter.getLyricsIndexOffset();
-//                }else{
-//                    position = curPosition + mCount / 2 + mAdapter.getLyricsIndexOffset();
-//                }
-//                position = (position< 0)?0:position;
-//                position = (position > mAdapter.getItemCount()-1)?mAdapter.getItemCount()-1:position;
-//                mLayoutManager.smoothScrollToPosition(this,null, position);
             }else{
                 smoothScrollBy(0,mItemHeight);
             }
         }
+        int curPosition = mLyricsSchedule.getCurPosition();
         mAdapter.setCurPosition(curPosition);
+        focusCurrentItem(curPosition);
+    }
+
+    /**
+     * 高亢显示当前item，并取消之前的item高亢色
+     * @param curPosition
+     */
+    private void focusCurrentItem(int curPosition){
+        if(mLastView != null){
+            mLastView.setTextColor(0xff000000);
+        }
         View view = mLayoutManager.findViewByPosition(curPosition + mAdapter.getLyricsIndexOffset());
         if(view != null){
-            ((TextView)view).setTextColor(0xffff0000);
+            mLastView = (TextView)view;
+            mLastView.setTextColor(0xffff0000);
         }
         view = mLayoutManager.findViewByPosition(curPosition);
         if(view != null){
@@ -133,7 +198,8 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     }
 
     @Override
-    public void pause() {
+    public void pause(long pauseTime) {
+        mNextStartTime = pauseTime;
         mLyricsSchedule.pause();
     }
 
@@ -143,16 +209,12 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     }
 
     private void scrollToFocus(){
-        int position = mLyricsSchedule.getCurPosition() + 1;
-        position = position >= mLyrics.size() ? mLyrics.size()-1 : position;
-        mLayoutManager.smoothScrollToPosition(this,null, position);
-//        int curPosition = mLyricsSchedule.getCurPosition();
-//        int visibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
-//        if(curPosition < visibleItemPosition){
-//            smoothScrollBy(0,(curPosition - visibleItemPosition-4)*mItemHeight);
-//        }else{
-//            smoothScrollBy(0,(curPosition - visibleItemPosition+1)*mItemHeight);
-//        }
+        //需要加上除了普通歌词外的头布局数
+        int curPosition = mLyricsSchedule.getCurPosition();
+        if(!mLyricsSchedule.isWorkRunning() && !mLyricsSchedule.isEndWork()){
+            curPosition = mLyricsSchedule.getCurPosition(mNextStartTime);
+        }
+        mLayoutManager.smoothScrollToPosition(this,null, curPosition + mAdapter.getLyricsIndexOffset());
     }
 
     @Override
@@ -177,9 +239,9 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     private void adjustLyrics(){
         if(!mIsInterrupt){
             mIsUserActive = false;
-            if(mLyricsSchedule.getCurPosition() != mLyrics.size()){
+            if(mLyricsSchedule.isWorkRunning()){
                 isNeedAdjust = true;
-            }else{//手动调整
+            }else{//当前计划任务未进行，因此手动调整
                 scrollToFocus();
             }
         }
@@ -188,21 +250,29 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     private boolean isNeedAdjust = false;
 
     private static class LyricsViewHandler extends Handler {
-        private WeakReference<RecyclerLyricsView> mLyricsItem;
+        private WeakReference<RecyclerLyricsView> mLyricsView;
 
         public LyricsViewHandler(RecyclerLyricsView lyricsView){
-            mLyricsItem = new WeakReference<>(lyricsView);
+            mLyricsView = new WeakReference<>(lyricsView);
         }
 
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if(msg.what == MSG_ADJUST_LYRICS){
-                RecyclerLyricsView recyclerLyricsView = mLyricsItem.get();
-                if(recyclerLyricsView != null){
-                    recyclerLyricsView.adjustLyrics();
+            RecyclerLyricsView recyclerLyricsView = mLyricsView.get();
+            if(recyclerLyricsView != null){
+                switch (msg.what){
+                    case MSG_ADJUST_LYRICS:
+                        recyclerLyricsView.adjustLyrics();
+                        break;
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mLyricsSchedule.end();
     }
 }

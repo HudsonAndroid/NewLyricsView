@@ -30,12 +30,22 @@ public class EmptyLyricsView extends TextView implements ILyricsView<AbsLyrics> 
     }
 
     @Override
-    public void setLyrics(List<AbsLyrics> lyrics, List<Long> timeList) {
+    public void setLyrics(List<AbsLyrics> lyrics, List<Long> timeList,long startTime) {
 
     }
 
     @Override
+    public int setLyricsCount(int count) {
+        return 1;
+    }
+
+    @Override
     public void play(long currentProgress) {
+
+    }
+
+    @Override
+    public void play() {
 
     }
 
@@ -66,7 +76,7 @@ public class EmptyLyricsView extends TextView implements ILyricsView<AbsLyrics> 
     }
 
     @Override
-    public void pause() {
+    public void pause(long time) {
 
     }
 

@@ -12,13 +12,25 @@ import java.util.List;
  */
 public interface ILyricsView<T extends AbsLyrics> {
 
-    void setLyrics(List<T> lyrics,List<Long> timeList);
+    void setLyrics(List<T> lyrics,List<Long> timeList,long startTime);
 
     /**
-     * 播放歌词
+     * 设置歌词个数，可能会被LyricsView修改
+     * @param count 个数
+     * @return 实际LyricsView的歌词个数
+     */
+    int setLyricsCount(int count);
+
+    /**
+     * 从某个位置开始播放歌词
      * @param currentProgress
      */
     void play(long currentProgress);
+
+    /**
+     * 播放
+     */
+    void play();
 
     /**
      * 准备状态
@@ -51,7 +63,7 @@ public interface ILyricsView<T extends AbsLyrics> {
     /**
      * 暂停
      */
-    void pause();
+    void pause(long pauseTime);
 
     /**
      * 获取布局

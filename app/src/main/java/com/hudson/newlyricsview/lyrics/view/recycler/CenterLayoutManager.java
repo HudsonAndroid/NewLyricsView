@@ -7,6 +7,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
 /**
+ * 原有Manager在smoothScroll时会在目标
+ * position显示之后便不再滚动，因此自定义
+ * 一个Manager。只对smooth滑动有效
  * Created by hpz on 2018/12/14.
  */
 public class CenterLayoutManager extends LinearLayoutManager {

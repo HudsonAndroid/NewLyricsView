@@ -13,6 +13,7 @@ public abstract class AbsScheduleWork {
     protected IScheduleWorkListener mListener;
     protected final List<Long> mTimeList = new ArrayList<>();
     protected int mCurrentIndex;
+    private boolean mIsRunning = false;
 
     public AbsScheduleWork(){
     }
@@ -41,29 +42,38 @@ public abstract class AbsScheduleWork {
         if(mListener == null){
             throw new ScheduleInitialStateInvalidException("have you ever set the listener of schedule work?");
         }
-        int currentIndex = getCurrentIndex(startTime);
-        if(currentIndex != -1){
-            startSchedule(currentIndex,startTime);
+        mCurrentIndex = getCurrentIndex(startTime);
+        if(mCurrentIndex != mTimeList.size()){
+            startSchedule(startTime);
+            mIsRunning = true;
         }
     }
 
-    public abstract void pause();
+    public void pause(){
+        mIsRunning = false;
+    }
+    public void end(){
+        mIsRunning = false;
+    }
 
-    protected abstract void startSchedule(int currentIndex,long currentTime);
+    protected abstract void startSchedule(long currentTime);
 
     /**
-     *
-     * @param time 返回mTimeList中的Index,返回-1
+     * 当前的歌词index,-1表示歌词前奏阶段，size表示歌词后节奏
+     * @param time 返回mTimeList中的Index,返回size
      *             表示不需要进行计划任务
      * @return
      */
-    private int getCurrentIndex(long time){
-        for (int i = 0; i < mTimeList.size(); i++) {
-            if(mTimeList.get(i) > time){
+    public int getCurrentIndex(long time){
+        if(mTimeList.size() == 0){
+            throw new ScheduleInitialStateInvalidException("time list is empty!");
+        }
+        for (int i = -1; i < mTimeList.size(); i++) {
+            if(mTimeList.get(i+1) > time){
                 return i;
             }
         }
-        return -1;
+        return mTimeList.size();
     }
 
     protected void next(){
@@ -74,5 +84,21 @@ public abstract class AbsScheduleWork {
 
     public int getCurrentIndex(){
         return mCurrentIndex;
+    }
+
+    /**
+     * 当前的定时任务是否正在进行
+     * @return
+     */
+    public boolean isRunning() {
+        return mIsRunning;
+    }
+
+    /**
+     * 是否是结束了
+     * @return
+     */
+    public boolean isEnd(){
+        return mCurrentIndex == mTimeList.size()-1;
     }
 }

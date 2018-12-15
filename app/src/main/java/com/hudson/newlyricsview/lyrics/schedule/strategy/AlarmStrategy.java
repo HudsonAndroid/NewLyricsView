@@ -9,12 +9,7 @@ public class AlarmStrategy extends AbsScheduleWork {
     }
 
     @Override
-    public void pause() {
-
-    }
-
-    @Override
-    protected void startSchedule(int currentIndex, long currentTime) {
+    protected void startSchedule(long currentTime) {
 
     }
 }

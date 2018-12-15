@@ -27,9 +27,16 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private int mCurPosition;
     private int mTopViewHeight;
     private int mBottomViewHeight;
+    private int mLyricsItemHeight;
 
     protected LyricsAdapter(Context context){
         mContext = context;
+    }
+
+    public void setViewHeight(int itemHeight,int topViewHeight,int bottomViewHeight){
+        mLyricsItemHeight = itemHeight;
+        mTopViewHeight = topViewHeight;
+        mBottomViewHeight = bottomViewHeight;
     }
 
     public void refreshList(List<AbsLyrics> datas){
@@ -42,11 +49,10 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         mCurPosition = position;
     }
 
-    public void setEmptyViewHeight(int topHeight,int bottomHeight){
-        mTopViewHeight = topHeight;
-        mBottomViewHeight = bottomHeight;
-    }
-
+    /**
+     * 获取普通歌词之前的顶部emptyView的数目
+     * @return
+     */
     public int getLyricsIndexOffset(){
         return 1;
     }
@@ -63,7 +69,9 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mBottomViewHeight));
             return new EmptyViewHolder(itemView);
         }else{
-            return new LyricsViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_lyrics,parent,false));
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_lyrics, parent, false);
+            itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mLyricsItemHeight));
+            return new LyricsViewHolder(itemView);
         }
     }
 

@@ -20,6 +20,7 @@ public class LyricsController{
     private ILyricsView<AbsLyrics> mLyricsView;
     private AbsLyricsDecoder<AbsLyrics> mLyricsDecoder;
     private Context mContext;
+    private int mLyricsCount;
 
     public LyricsController(Context context){
         mContext = context;
@@ -34,16 +35,28 @@ public class LyricsController{
         mLyricsDecoder.decode(path);
     }
 
-    public void initialLyricsView(){
+    public void initialLyricsView(long startTime){
         List<AbsLyrics> lyrics = mLyricsDecoder.getLyrics();
         if(lyrics == null || lyrics.size() == 0){
             mLyricsView = new EmptyLyricsView(mContext);
         }else{
             mLyricsView = new RecyclerLyricsView(mContext);
-            mLyricsView.setLyrics(lyrics,mLyricsDecoder.getLyricsTimeList());
+            mLyricsView.setLyrics(lyrics,mLyricsDecoder.getLyricsTimeList(),startTime);
         }
+        mLyricsCount = mLyricsView.setLyricsCount(mLyricsCount);
     }
-    
+
+    /**
+     * 播放
+     */
+    public void play(){
+        mLyricsView.play();
+    }
+
+    /**
+     * 从某个位置开始播放
+     * @param position
+     */
     public void play(int position) {
         mLyricsView.play(position);
     }
@@ -64,15 +77,15 @@ public class LyricsController{
         mLyricsView.backward(timeOffset);
     }
 
-    public void next() {
-        mLyricsView.next();
-    }
-
-    public void pause() {
-        mLyricsView.pause();
+    public void pause(long time) {
+        mLyricsView.pause(time);
     }
 
     public View getLyricsView(){
         return mLyricsView.getView();
+    }
+
+    public void setLyricsCount(int count){
+        mLyricsCount = count;
     }
 }

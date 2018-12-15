@@ -20,28 +20,34 @@ public class HandlerStrategy extends AbsScheduleWork {
 
     @Override
     public void pause() {
+        end();
+    }
+
+    @Override
+    public void end() {
+        super.end();
         mHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
-    protected void startSchedule(int currentIndex, long currentTime) {
+    protected void startSchedule(long currentTime) {
         mHandler.removeCallbacksAndMessages(null);
-        mCurrentIndex = currentIndex;
-        mHandler.sendEmptyMessageDelayed(MSG_NORMAL_UPDATE,mTimeList.get(mCurrentIndex) - currentTime);
+        mHandler.sendEmptyMessageDelayed(MSG_NORMAL_UPDATE,mTimeList.get(mCurrentIndex+1) - currentTime);
     }
 
     @Override
     protected void next() {
-        super.next();
         mCurrentIndex ++;
-        if(mCurrentIndex >= mTimeList.size()){
+        super.next();
+        int size = mTimeList.size();
+        if(mCurrentIndex >= size){
             return ;
         }
-        if(mCurrentIndex >= 1){
+        if(mCurrentIndex >= 0 && (mCurrentIndex + 1)<size){
             mHandler.sendEmptyMessageDelayed(MSG_NORMAL_UPDATE,
-                    mTimeList.get(mCurrentIndex) - mTimeList.get(mCurrentIndex-1));
+                    mTimeList.get(mCurrentIndex+1) - mTimeList.get(mCurrentIndex));
         }else{
-            mHandler.sendEmptyMessageDelayed(MSG_NORMAL_UPDATE,mTimeList.get(mCurrentIndex));
+            end();
         }
     }
 
