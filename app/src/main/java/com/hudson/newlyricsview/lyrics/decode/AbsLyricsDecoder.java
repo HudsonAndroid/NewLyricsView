@@ -1,5 +1,7 @@
 package com.hudson.newlyricsview.lyrics.decode;
 
+import android.content.Context;
+
 import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
 
 import java.util.ArrayList;
@@ -13,7 +15,7 @@ public abstract class AbsLyricsDecoder<T extends AbsLyrics> {
     protected final List<T> mLyrics = new ArrayList<>();
     protected final List<Long> mTimeList = new ArrayList<>();
 
-    public abstract void decode(String path);
+    public abstract void decode(Context context, String path);
 
     public List<T> getLyrics(){
         return mLyrics;

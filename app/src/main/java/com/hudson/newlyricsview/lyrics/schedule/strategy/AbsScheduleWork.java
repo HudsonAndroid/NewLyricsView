@@ -114,10 +114,17 @@ public abstract class AbsScheduleWork {
     }
 
     /**
-     * 是否是结束了
+     * 获取下句歌词播放的时间
      * @return
      */
-    public boolean isEnd(){
-        return mCurrentIndex == mTimeList.size()-1;
+    public long getNextLyricsTimeOffset(){
+        if(mCurrentIndex >= 0 && mCurrentIndex < mTimeList.size()-1){
+            return mTimeList.get(mCurrentIndex+1)-mTimeList.get(mCurrentIndex);
+        }
+        if(mCurrentIndex == -1){
+            return mTimeList.get(0);
+        }
+        return Long.MAX_VALUE;
     }
+
 }

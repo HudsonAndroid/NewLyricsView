@@ -31,8 +31,8 @@ public class LyricsController{
      * 最好放入异步线程
      * @param path
      */
-    public void decodeLyrics(String path){
-        mLyricsDecoder.decode(path);
+    public void decodeLyrics(Context context,String path){
+        mLyricsDecoder.decode(context,path);
     }
 
     public void initialLyricsView(long startTime){

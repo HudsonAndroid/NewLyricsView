@@ -26,7 +26,8 @@ import java.util.List;
  * Created by hpz on 2018/12/6.
  */
 public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsLyrics> {
-    private static final int USER_INFECTION_TIME = 3000;//ms
+    private static final int USER_INFECTION_TIME = 5000;//ms
+    private static final int ADJUST_SCROLL_MIN_TIME = 1000;//ms
     private static final int MSG_ADJUST_LYRICS = 1;
     private static final int DEFAULT_LYRICS_COUNT = 5;
     private int mItemHeight;//px
@@ -170,6 +171,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
 
     @Override
     public void next() {
+        mLastLyricsScrollTime = System.currentTimeMillis();
         if(!mIsUserActive){
             if(isNeedAdjust){
                 isNeedAdjust = false;
@@ -240,14 +242,17 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     private void adjustLyrics(){
         if(!mIsInterrupt){
             mIsUserActive = false;
-            if(mLyricsSchedule.isWorkRunning()){
+            long offset = mLyricsSchedule.getNextLyricsTimeOffset();
+            long passBy = System.currentTimeMillis() - mLastLyricsScrollTime;
+            if(mLyricsSchedule.isWorkRunning() &&
+                    offset - passBy < ADJUST_SCROLL_MIN_TIME){//可以由next接管
                 isNeedAdjust = true;
             }else{//当前计划任务未进行，因此手动调整
                 scrollToFocus();
             }
         }
     }
-
+    private long mLastLyricsScrollTime;
     private boolean isNeedAdjust = false;
 
     private static class LyricsViewHandler extends Handler {

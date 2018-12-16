@@ -60,7 +60,7 @@ public class LyricsSchedule implements AbsScheduleWork.IScheduleWorkListener {
         return mScheduleWork.isRunning();
     }
 
-    public boolean isEndWork(){
-        return mScheduleWork.isEnd();
+    public long getNextLyricsTimeOffset(){
+        return mScheduleWork.getNextLyricsTimeOffset();
     }
 }
