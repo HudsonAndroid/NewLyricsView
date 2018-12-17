@@ -20,6 +20,7 @@ public class HandlerStrategy extends AbsScheduleWork {
 
     @Override
     public void pause(long pauseTime) {
+        super.pause(pauseTime);
         end();
     }
 

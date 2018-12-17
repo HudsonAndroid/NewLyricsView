@@ -67,10 +67,18 @@ public abstract class AbsScheduleWork {
         commonStart(mStartTime);
     }
 
+    /**
+     * 子类必须回调父类的pause方法
+     * @param pauseTime
+     */
     public void pause(long pauseTime){
         mStartTime = pauseTime;
         mIsRunning = false;
     }
+
+    /**
+     * 子类必须回调父类的end方法
+     */
     public void end(){
         mIsRunning = false;
     }
