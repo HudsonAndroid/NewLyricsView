@@ -84,6 +84,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
         mItemHeight = h / mLyricsCount;
         mAdapter.setViewHeight(mItemHeight,
                 (h + mItemHeight)/2,(h - mItemHeight)/2);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
