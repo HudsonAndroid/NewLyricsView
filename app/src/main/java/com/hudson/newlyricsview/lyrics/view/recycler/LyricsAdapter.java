@@ -3,13 +3,12 @@ package com.hudson.newlyricsview.lyrics.view.recycler;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.hudson.newlyricsview.R;
 import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
+import com.hudson.newlyricsview.lyrics.view.item.LyricsTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,9 +68,9 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mBottomViewHeight));
             return new EmptyViewHolder(itemView);
         }else{//normalLyricsItem
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_lyrics, parent, false);
-            itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mLyricsItemHeight));
-            return new LyricsViewHolder(itemView);
+            View item = new LyricsTextView(parent.getContext());
+            item.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mLyricsItemHeight));
+            return new LyricsViewHolder(item);
         }
     }
 

@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
  */
 public class AbsLyrics implements Comparable<AbsLyrics>{
     private String mLrcContent;
+    private String mLrcTranslate;
     private long mLrcProgressTime;
 
     public AbsLyrics() {
@@ -15,6 +16,14 @@ public class AbsLyrics implements Comparable<AbsLyrics>{
     public AbsLyrics(String lrcContent, long lrcProgressTime) {
         mLrcContent = lrcContent;
         mLrcProgressTime = lrcProgressTime;
+    }
+
+    public String getLrcTranslate() {
+        return mLrcTranslate;
+    }
+
+    public void setLrcTranslate(String lrcTranslate) {
+        mLrcTranslate = lrcTranslate;
     }
 
     public String getLrcContent() {

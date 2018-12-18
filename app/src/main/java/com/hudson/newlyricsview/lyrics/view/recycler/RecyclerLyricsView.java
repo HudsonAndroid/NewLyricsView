@@ -123,10 +123,10 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
         int offset = getHeight() / 2 / mItemHeight;
         int firstVisiblePosition = mLayoutManager.findFirstVisibleItemPosition();
         int position;
-        if(curPosition > firstVisiblePosition){
+        if(curPosition >= firstVisiblePosition){
             position = curPosition + offset;
         }else{
-            position = curPosition - offset;
+            position = curPosition < offset ?curPosition:curPosition - offset;
         }
         mLayoutManager.scrollToPosition(position+mAdapter.getLyricsIndexOffset());
         mAdapter.setCurPosition(curPosition);
@@ -170,6 +170,8 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
         showToast(getResources().getString(R.string.lyrics_tips_backward,timeOffset+""));
     }
 
+    private int mScrollExtend = 0;
+
     @Override
     public void next() {
         mLastLyricsScrollTime = System.currentTimeMillis();
@@ -178,7 +180,13 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
                 isNeedAdjust = false;
                 scrollToFocus();
             }else{
-                smoothScrollBy(0,mItemHeight);
+                //如果前后两句歌词相差时间小于等于0，则会出现中间某次不会滑动的情形，因此此时叠加，并且不滑动
+                if(mLyricsSchedule.getNextLyricsTimeOffset() <= 0){
+                    mScrollExtend += mItemHeight;
+                }else{
+                    smoothScrollBy(0,mItemHeight + mScrollExtend);
+                    mScrollExtend = 0;
+                }
             }
         }
         int curPosition = mLyricsSchedule.getCurPosition();
@@ -248,7 +256,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
             if(mLyricsSchedule.isWorkRunning() &&
                     offset - passBy < ADJUST_SCROLL_MIN_TIME){//可以由next接管
                 isNeedAdjust = true;
-            }else{//当前计划任务未进行，因此手动调整
+            }else{//当前计划任务未进行或者next下句歌词还需要较长时间，因此手动调整
                 scrollToFocus();
             }
         }
