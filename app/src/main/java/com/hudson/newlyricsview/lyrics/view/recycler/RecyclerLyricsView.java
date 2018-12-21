@@ -103,7 +103,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
      * 初始状态下滑动到指定位置
      * @param initialPosition
      */
-    public void initStartScrollPosition(final int initialPosition){
+    private void initStartScrollPosition(final int initialPosition){
         int height = getHeight();
         if(height != 0){
             scrollToTarget(initialPosition);
@@ -178,7 +178,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
         if(!mIsUserActive){
             if(isNeedAdjust){
                 isNeedAdjust = false;
-                scrollToFocus();
+                scrollToCenter();
             }else{
                 //如果前后两句歌词相差时间小于等于0，则会出现中间某次不会滑动的情形，因此此时叠加，并且不滑动
                 if(mLyricsSchedule.getNextLyricsTimeOffset() <= 0){
@@ -223,7 +223,10 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
         return this;
     }
 
-    private void scrollToFocus(){
+    /**
+     * 滑动当前歌词到中央
+     */
+    public void scrollToCenter(){
         //需要加上除了普通歌词外的头布局数
         mLayoutManager.smoothScrollToPosition(this,null,
                 mLyricsSchedule.getCurPosition() + mAdapter.getLyricsIndexOffset());
@@ -257,7 +260,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
                     offset - passBy < ADJUST_SCROLL_MIN_TIME){//可以由next接管
                 isNeedAdjust = true;
             }else{//当前计划任务未进行或者next下句歌词还需要较长时间，因此手动调整
-                scrollToFocus();
+                scrollToCenter();
             }
         }
     }
