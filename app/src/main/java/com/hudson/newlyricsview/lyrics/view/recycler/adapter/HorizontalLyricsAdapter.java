@@ -34,6 +34,7 @@ public class HorizontalLyricsAdapter extends LyricsAdapter {
             return new EmptyViewHolder(itemView);
         }else{//normalLyricsItem
             LyricsTextView item = new HorizontalLyricsTextView(parent.getContext());
+            item.setTypeface(mLyricsTypeface);
             item.setLayoutParams(new ViewGroup.LayoutParams(mLyricsItemDimension,ViewGroup.LayoutParams.MATCH_PARENT));
             return new LyricsViewHolder(item);
         }

@@ -1,5 +1,6 @@
 package com.hudson.newlyricsview.lyrics.view;
 
+import android.graphics.Typeface;
 import android.view.View;
 
 import com.hudson.newlyricsview.lyrics.entity.Lyrics;
@@ -14,6 +15,12 @@ import java.util.List;
 public interface ILyricsView {
 
     void setLyrics(List<Lyrics> lyrics,List<Long> timeList,long startTime);
+
+    /**
+     * 设置字体
+     * @param typeface
+     */
+    void setTypeface(Typeface typeface);
 
     /**
      * 设置歌词个数，可能会被LyricsView修改

@@ -1,6 +1,7 @@
 package com.hudson.newlyricsview.lyrics.view.recycler.lyricsView;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
@@ -135,6 +136,11 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         int initialPosition = mLyricsSchedule.getCurPosition();
         initStartScrollPosition(initialPosition);
         mAdapter.setCurPosition(initialPosition);
+    }
+
+    @Override
+    public void setTypeface(Typeface typeface) {
+        mAdapter.setLyricsTypeface(typeface);
     }
 
     /**

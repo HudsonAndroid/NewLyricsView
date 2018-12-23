@@ -1,6 +1,7 @@
 package com.hudson.newlyricsview.lyrics.view.config;
 
 import android.content.Context;
+import android.graphics.Typeface;
 
 import com.hudson.newlyricsview.lyrics.decode.AbsLyricsDecoder;
 import com.hudson.newlyricsview.lyrics.decode.NormalLyricsDecoder;
@@ -22,6 +23,7 @@ public class LyricsViewConfig {
     LyricsViewStyle lyricsViewStyle = LyricsViewStyle.VerticalNormalStyle;
     AbsLyricsDecoder lyricsDecoder = new NormalLyricsDecoder();
     ILyricsView emptyLyricsView;
+    Typeface typeface = Typeface.DEFAULT;
 
     /**
      * 注意内部可能会修改传入的值，使其变为奇数
@@ -61,6 +63,14 @@ public class LyricsViewConfig {
     public LyricsViewConfig setEmptyLyricsView(ILyricsView emptyLyricsView){
         this.emptyLyricsView = emptyLyricsView;
         return this;
+    }
+
+    public void setTypeface(Typeface typeface) {
+        this.typeface = typeface;
+    }
+
+    public Typeface getTypeface() {
+        return typeface;
     }
 
     public ILyricsView getEmptyLyricsView(Context activityContext){

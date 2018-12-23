@@ -1,6 +1,7 @@
 package com.hudson.newlyricsview.lyrics.view.recycler.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -30,6 +31,7 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     protected int mFirstViewDimension;
     protected int mEndViewDimension;
     protected int mLyricsItemDimension;
+    protected Typeface mLyricsTypeface;
 
     public LyricsAdapter(Context context){
         mContext = context;
@@ -39,6 +41,10 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         mLyricsItemDimension = itemDimension;
         mFirstViewDimension = firstViewDimension;
         mEndViewDimension = endViewDimension;
+    }
+
+    public void setLyricsTypeface(Typeface lyricsTypeface) {
+        mLyricsTypeface = lyricsTypeface;
     }
 
     public void refreshList(List<Lyrics> datas){
@@ -71,7 +77,8 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mEndViewDimension));
             return new EmptyViewHolder(itemView);
         }else{//normalLyricsItem
-            View item = new LyricsTextView(parent.getContext());
+            LyricsTextView item = new LyricsTextView(parent.getContext());
+            item.setTypeface(mLyricsTypeface);
             item.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mLyricsItemDimension));
             return new LyricsViewHolder(item);
         }

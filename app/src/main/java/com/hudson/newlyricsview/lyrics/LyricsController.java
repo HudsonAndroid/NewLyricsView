@@ -34,6 +34,7 @@ public class LyricsController{
         mNonEmptyLyricsView.setFocusLyricsColor(config.getFoucsColor());
         mNonEmptyLyricsView.setNormalLyricsColor(config.getNormalColor());
         mNonEmptyLyricsView.setScheduleType(config.getSchedulePolicy());
+        mNonEmptyLyricsView.setTypeface(config.getTypeface());
     }
 
     /**
