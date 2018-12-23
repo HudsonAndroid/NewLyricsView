@@ -3,7 +3,7 @@ package com.hudson.newlyricsview.lyrics.decode;
 import android.content.Context;
 import android.util.Log;
 
-import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
+import com.hudson.newlyricsview.lyrics.entity.Lyrics;
 
 import org.mozilla.universalchardet.UniversalDetector;
 
@@ -17,7 +17,7 @@ import java.util.Collections;
 /**
  * Created by Hudson on 2018/12/8.
  */
-public class NormalLyricsDecoder extends AbsLyricsDecoder<AbsLyrics> {
+public class NormalLyricsDecoder extends AbsLyricsDecoder {
 
     @Override
     public void decode(Context context,String path) {
@@ -54,7 +54,7 @@ public class NormalLyricsDecoder extends AbsLyricsDecoder<AbsLyrics> {
         try{
             BufferedReader br = new BufferedReader(isr);
             String s = "";
-            AbsLyrics lyrics ;
+            Lyrics lyrics ;
             int len;
             String splitLrcData[];
             while((s = br.readLine()) != null) {
@@ -69,7 +69,7 @@ public class NormalLyricsDecoder extends AbsLyricsDecoder<AbsLyrics> {
                 }
                 if(len > 1) {
                     for(int i = 0;i<len-1;i++){//存在多个时间戳使用同一句歌词的情况
-                        lyrics = new AbsLyrics();
+                        lyrics = new Lyrics();
                         lyrics.setLrcContent(splitLrcData[len-1]);//添加内容
 //                        if(!s.endsWith("]")){//如果以"]"结尾，如："[00:08.78][04:35.99]"没有歌词内容
 //

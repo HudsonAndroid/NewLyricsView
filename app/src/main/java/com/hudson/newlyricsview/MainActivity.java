@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.hudson.newlyricsview.lyrics.LyricsController;
+import com.hudson.newlyricsview.lyrics.view.config.LyricsViewConfig;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         requestPermission();
         mLyricsController = new LyricsController(this);
-        mLyricsController.setLyricsCount(9);
+        LyricsViewConfig config =
+                new LyricsViewConfig()
+                    .setLyricsCount(9);
+        mLyricsController.init(config);
         mEtMusic = findViewById(R.id.et_music);
         mContainer = findViewById(R.id.rl_container);
         musicPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/donglingMusic/download/";
@@ -48,11 +52,9 @@ public class MainActivity extends AppCompatActivity {
     public void start(View v){
         if(mediaPlayer.isPlaying() && isStart){
             mediaPlayer.pause();
-            Log.e("hudson","暂停，播放器当前的时间"+mediaPlayer.getCurrentPosition());
             mLyricsController.pause(mediaPlayer.getCurrentPosition());
         }else if(isStart){
             mediaPlayer.start();
-            Log.e("hudson","继续，播放器当前的时间"+mediaPlayer.getCurrentPosition());
             mLyricsController.play();
         }else{
             try {

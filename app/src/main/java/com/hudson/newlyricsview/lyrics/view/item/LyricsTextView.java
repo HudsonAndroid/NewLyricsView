@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
+import com.hudson.newlyricsview.lyrics.entity.Lyrics;
 
 /**
  * Created by hpz on 2018/12/18.
@@ -28,7 +28,7 @@ public class LyricsTextView extends TextView {
         setGravity(Gravity.CENTER);
     }
 
-    public void setLyrics(AbsLyrics lyrics){
+    public void setLyrics(Lyrics lyrics){
         String lrcTranslate = lyrics.getLrcTranslate();
         if(!TextUtils.isEmpty(lrcTranslate)){
             setText(lyrics.getLrcContent()+"\n"+lrcTranslate);

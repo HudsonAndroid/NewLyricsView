@@ -1,9 +1,9 @@
-package com.hudson.newlyricsview.lyrics.view.recycler;
+package com.hudson.newlyricsview.lyrics.view.recycler.viewholder;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
+import com.hudson.newlyricsview.lyrics.entity.Lyrics;
 
 /**
  * 抽象的ViewHolder
@@ -16,5 +16,5 @@ public abstract class BaseViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
     }
 
-    public void refreshView(AbsLyrics data, boolean isCurrent){}
+    public void refreshView(Lyrics data, boolean isCurrent){}
 }

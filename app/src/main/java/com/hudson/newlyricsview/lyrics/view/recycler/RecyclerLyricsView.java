@@ -13,9 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hudson.newlyricsview.R;
-import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
+import com.hudson.newlyricsview.lyrics.entity.Lyrics;
 import com.hudson.newlyricsview.lyrics.schedule.LyricsSchedule;
-import com.hudson.newlyricsview.lyrics.schedule.strategy.HandlerStrategy;
+import com.hudson.newlyricsview.lyrics.schedule.strategy.AbsScheduleWork;
 import com.hudson.newlyricsview.lyrics.view.ILyricsView;
 
 import java.lang.ref.WeakReference;
@@ -25,20 +25,23 @@ import java.util.List;
 /**
  * Created by hpz on 2018/12/6.
  */
-public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsLyrics> {
+public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     private static final int USER_INFECTION_TIME = 5000;//ms
     private static final int ADJUST_SCROLL_MIN_TIME = 1000;//ms
     private static final int MSG_ADJUST_LYRICS = 1;
     private static final int DEFAULT_LYRICS_COUNT = 5;
+    private static final int DEFAULT_FOCUS_LYRICS_COLOR = 0xffff0000;
+    private static final int DEFAULT_NORMAL_LYRICS_COLOR = 0xff000000;
     private int mItemHeight;//px
     private LyricsSchedule mLyricsSchedule;
-    private final List<AbsLyrics> mLyrics = new ArrayList<>();
+    private final List<Lyrics> mLyrics = new ArrayList<>();
     private LinearLayoutManager mLayoutManager;
     private LyricsAdapter mAdapter;
     private boolean mIsUserActive = false;
     private boolean mIsInterrupt = false;
     private LyricsViewHandler mHandler;
     private int mLyricsCount;
+    private int mFocusColor,mNormalColor;//高亢色、普通色
     private TextView mLastView;
     private long mLyricsTimeOffset;//歌词播放快进快退offset
 
@@ -52,12 +55,14 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
 
     public RecyclerLyricsView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        mLyricsSchedule = new LyricsSchedule(new HandlerStrategy(),this);
         mLayoutManager = new CenterLayoutManager(getContext());
         mLayoutManager.setOrientation(VERTICAL);
         setLayoutManager(mLayoutManager);
         mHandler = new LyricsViewHandler(this);
         mAdapter = new LyricsAdapter(getContext());
+        mFocusColor = DEFAULT_FOCUS_LYRICS_COLOR;
+        mNormalColor = DEFAULT_NORMAL_LYRICS_COLOR;
+        mLyricsCount = DEFAULT_LYRICS_COUNT;
         setAdapter(mAdapter);
     }
 
@@ -76,11 +81,27 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     }
 
     @Override
+    public void setScheduleType(AbsScheduleWork scheduleWork) {
+        mLyricsSchedule = new LyricsSchedule(scheduleWork,this);
+    }
+
+    @Override
+    public void setFocusLyricsColor(int color) {
+        if(color != 0){
+            mFocusColor = color;
+        }
+    }
+
+    @Override
+    public void setNormalLyricsColor(int color) {
+        if(color != 0){
+            mNormalColor = color;
+        }
+    }
+
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        if(mLyricsCount == 0){
-            mLyricsCount = DEFAULT_LYRICS_COUNT;
-        }
         mItemHeight = h / mLyricsCount;
         mAdapter.setViewHeight(mItemHeight,
                 (h + mItemHeight)/2,(h - mItemHeight)/2);
@@ -88,7 +109,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     }
 
     @Override
-    public void setLyrics(List<AbsLyrics> lyrics, List<Long> timeList,long startTime) {
+    public void setLyrics(List<Lyrics> lyrics, List<Long> timeList, long startTime) {
         mLyrics.clear();
         mLyrics.addAll(lyrics);
         mAdapter.refreshList(lyrics);
@@ -144,7 +165,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
     }
 
     @Override
-    public AbsLyrics getCurLyrics() {
+    public Lyrics getCurLyrics() {
         int curPosition = mLyricsSchedule.getCurPosition();
         if(curPosition >=0 && curPosition < mLyrics.size()){
             return mLyrics.get(curPosition);
@@ -200,16 +221,16 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView<AbsL
      */
     private void focusCurrentItem(int curPosition){
         if(mLastView != null){
-            mLastView.setTextColor(0xff000000);
+            mLastView.setTextColor(mNormalColor);
         }
         View view = mLayoutManager.findViewByPosition(curPosition + mAdapter.getLyricsIndexOffset());
         if(view != null){
             mLastView = (TextView)view;
-            mLastView.setTextColor(0xffff0000);
+            mLastView.setTextColor(mFocusColor);
         }
         view = mLayoutManager.findViewByPosition(curPosition);
         if(view != null){
-            ((TextView)view).setTextColor(0xff000000);
+            ((TextView)view).setTextColor(mNormalColor);
         }
     }
 

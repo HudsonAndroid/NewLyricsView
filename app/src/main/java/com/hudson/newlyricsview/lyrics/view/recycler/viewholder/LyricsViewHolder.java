@@ -1,8 +1,8 @@
-package com.hudson.newlyricsview.lyrics.view.recycler;
+package com.hudson.newlyricsview.lyrics.view.recycler.viewholder;
 
 import android.view.View;
 
-import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
+import com.hudson.newlyricsview.lyrics.entity.Lyrics;
 import com.hudson.newlyricsview.lyrics.view.item.LyricsTextView;
 
 /**
@@ -18,7 +18,7 @@ public class LyricsViewHolder extends BaseViewHolder {
     }
 
     @Override
-    public void refreshView(AbsLyrics data,boolean isCurrent) {
+    public void refreshView(Lyrics data, boolean isCurrent) {
         mContent.setLyrics(data);
         if(isCurrent){
             mContent.setTextColor(0xffff0000);

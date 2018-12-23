@@ -7,8 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
+import com.hudson.newlyricsview.lyrics.entity.Lyrics;
 import com.hudson.newlyricsview.lyrics.view.item.LyricsTextView;
+import com.hudson.newlyricsview.lyrics.view.recycler.viewholder.BaseViewHolder;
+import com.hudson.newlyricsview.lyrics.view.recycler.viewholder.EmptyViewHolder;
+import com.hudson.newlyricsview.lyrics.view.recycler.viewholder.LyricsViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +24,7 @@ import java.util.List;
 public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private static final int TYPE_TOP = 1;
     private static final int TYPE_BOTTOM = 2;
-    protected final List<AbsLyrics> mDatas = new ArrayList<>();
+    protected final List<Lyrics> mDatas = new ArrayList<>();
     protected Context mContext;
     private int mCurPosition;
     private int mTopViewHeight;
@@ -38,7 +41,7 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         mBottomViewHeight = bottomViewHeight;
     }
 
-    public void refreshList(List<AbsLyrics> datas){
+    public void refreshList(List<Lyrics> datas){
         mDatas.clear();
         mDatas.addAll(datas);
         notifyDataSetChanged();

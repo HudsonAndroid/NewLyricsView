@@ -5,15 +5,15 @@ import android.support.annotation.NonNull;
 /**
  * Created by hpz on 2018/12/6.
  */
-public class AbsLyrics implements Comparable<AbsLyrics>{
+public class Lyrics implements Comparable<Lyrics>{
     private String mLrcContent;
     private String mLrcTranslate;
     private long mLrcProgressTime;
 
-    public AbsLyrics() {
+    public Lyrics() {
     }
 
-    public AbsLyrics(String lrcContent, long lrcProgressTime) {
+    public Lyrics(String lrcContent, long lrcProgressTime) {
         mLrcContent = lrcContent;
         mLrcProgressTime = lrcProgressTime;
     }
@@ -43,7 +43,7 @@ public class AbsLyrics implements Comparable<AbsLyrics>{
     }
 
     @Override
-    public int compareTo(@NonNull AbsLyrics other) {
+    public int compareTo(@NonNull Lyrics other) {
         if(mLrcProgressTime != other.mLrcProgressTime){
             return (int) (mLrcProgressTime - other.mLrcProgressTime);
         }

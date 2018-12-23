@@ -2,7 +2,8 @@ package com.hudson.newlyricsview.lyrics.view;
 
 import android.view.View;
 
-import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
+import com.hudson.newlyricsview.lyrics.entity.Lyrics;
+import com.hudson.newlyricsview.lyrics.schedule.strategy.AbsScheduleWork;
 
 import java.util.List;
 
@@ -10,9 +11,9 @@ import java.util.List;
 /**
  * Created by hpz on 2018/12/6.
  */
-public interface ILyricsView<T extends AbsLyrics> {
+public interface ILyricsView {
 
-    void setLyrics(List<T> lyrics,List<Long> timeList,long startTime);
+    void setLyrics(List<Lyrics> lyrics,List<Long> timeList,long startTime);
 
     /**
      * 设置歌词个数，可能会被LyricsView修改
@@ -20,6 +21,24 @@ public interface ILyricsView<T extends AbsLyrics> {
      * @return 实际LyricsView的歌词个数
      */
     int setLyricsCount(int count);
+
+    /**
+     * 设置定时任务的方式
+     * @param scheduleWork
+     */
+    void setScheduleType(AbsScheduleWork scheduleWork);
+
+    /**
+     * 设置播放歌词颜色
+     * @param color
+     */
+    void setFocusLyricsColor(int color);
+
+    /**
+     * 设置未播放歌词颜色
+     * @param color
+     */
+    void setNormalLyricsColor(int color);
 
     /**
      * 从某个位置开始播放歌词
@@ -36,7 +55,7 @@ public interface ILyricsView<T extends AbsLyrics> {
      * 获取当前歌词
      * @return
      */
-    T getCurLyrics();
+    Lyrics getCurLyrics();
 
     /**
      * 快进

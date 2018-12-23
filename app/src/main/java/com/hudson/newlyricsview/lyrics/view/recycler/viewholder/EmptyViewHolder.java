@@ -1,4 +1,4 @@
-package com.hudson.newlyricsview.lyrics.view.recycler;
+package com.hudson.newlyricsview.lyrics.view.recycler.viewholder;
 
 import android.support.annotation.NonNull;
 import android.view.View;

@@ -91,7 +91,7 @@ public abstract class AbsScheduleWork {
      *             表示不需要进行计划任务
      * @return
      */
-    public int getCurrentIndex(long time){
+    public int getCurrentIndex(long time) throws ScheduleInitialStateInvalidException{
         if(mTimeList.size() == 0){
             throw new ScheduleInitialStateInvalidException("time list is empty!");
         }

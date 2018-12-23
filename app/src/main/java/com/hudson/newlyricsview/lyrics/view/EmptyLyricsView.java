@@ -6,7 +6,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
-import com.hudson.newlyricsview.lyrics.entity.AbsLyrics;
+import com.hudson.newlyricsview.lyrics.entity.Lyrics;
+import com.hudson.newlyricsview.lyrics.schedule.strategy.AbsScheduleWork;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 /**
  * Created by hpz on 2018/12/7.
  */
-public class EmptyLyricsView extends TextView implements ILyricsView<AbsLyrics> {
+public class EmptyLyricsView extends TextView implements ILyricsView {
     public EmptyLyricsView(Context context) {
         this(context, null);
     }
@@ -30,13 +31,28 @@ public class EmptyLyricsView extends TextView implements ILyricsView<AbsLyrics> 
     }
 
     @Override
-    public void setLyrics(List<AbsLyrics> lyrics, List<Long> timeList,long startTime) {
+    public void setLyrics(List<Lyrics> lyrics, List<Long> timeList, long startTime) {
 
     }
 
     @Override
     public int setLyricsCount(int count) {
         return 1;
+    }
+
+    @Override
+    public void setScheduleType(AbsScheduleWork scheduleWork) {
+
+    }
+
+    @Override
+    public void setFocusLyricsColor(int color) {
+
+    }
+
+    @Override
+    public void setNormalLyricsColor(int color) {
+
     }
 
     @Override
@@ -50,7 +66,7 @@ public class EmptyLyricsView extends TextView implements ILyricsView<AbsLyrics> 
     }
 
     @Override
-    public AbsLyrics getCurLyrics() {
+    public Lyrics getCurLyrics() {
         return null;
     }
 
