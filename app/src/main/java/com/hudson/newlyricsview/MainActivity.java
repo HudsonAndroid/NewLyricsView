@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         mLyricsController = new LyricsController(this);
         LyricsViewConfig config =
                 new LyricsViewConfig()
-                        .setLyricsViewStyle(LyricsViewStyle.VerticalNormalStyle)
+                        .setLyricsViewStyle(LyricsViewStyle.HorizontalStyle)
                         .setLyricsCount(9);
         mLyricsController.init(config);
         mEtMusic = findViewById(R.id.et_music);

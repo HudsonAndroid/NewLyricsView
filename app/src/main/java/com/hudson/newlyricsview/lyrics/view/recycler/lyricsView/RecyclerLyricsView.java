@@ -158,7 +158,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     }
 
     private void scrollToTarget(int curPosition){
-        int offset = getHeight() / 2 / mItemDimension;
+        int offset = getTotalDimension(getWidth(),getHeight()) / 2 / mItemDimension;
         int firstVisiblePosition = mLayoutManager.findFirstVisibleItemPosition();
         int position;
         if(curPosition >= firstVisiblePosition){

@@ -16,6 +16,7 @@ import java.util.List;
  */
 public class LyricsController{
     private ILyricsView mLyricsView;
+    private ILyricsView mNonEmptyLyricsView;
     private LyricsViewConfig mConfig;
     private AbsLyricsDecoder mLyricsDecoder;
     private Context mContext;
@@ -26,12 +27,13 @@ public class LyricsController{
 
     public void init(LyricsViewConfig config){
         mConfig = config;
+        mLyricsView = mConfig.getLyricsViewStyle().getLyricsView(mContext);
+        mNonEmptyLyricsView = mLyricsView;
         mLyricsDecoder = config.getLyricsDecoder();
-        mLyricsView = config.getLyricsViewStyle().getLyricsView(mContext);
-        mLyricsView.setLyricsCount(config.getLyricsCount());//内部可能会修改该值
-        mLyricsView.setFocusLyricsColor(config.getFoucsColor());
-        mLyricsView.setNormalLyricsColor(config.getNormalColor());
-        mLyricsView.setScheduleType(config.getSchedulePolicy());
+        mNonEmptyLyricsView.setLyricsCount(config.getLyricsCount());//内部可能会修改该值
+        mNonEmptyLyricsView.setFocusLyricsColor(config.getFoucsColor());
+        mNonEmptyLyricsView.setNormalLyricsColor(config.getNormalColor());
+        mNonEmptyLyricsView.setScheduleType(config.getSchedulePolicy());
     }
 
     /**
@@ -47,6 +49,7 @@ public class LyricsController{
         if(lyrics == null || lyrics.size() == 0){
             mLyricsView = mConfig.getEmptyLyricsView(mContext);
         }else{
+            mLyricsView = mNonEmptyLyricsView;
             mLyricsView.setLyrics(lyrics,mLyricsDecoder.getLyricsTimeList(),startTime);
         }
     }
