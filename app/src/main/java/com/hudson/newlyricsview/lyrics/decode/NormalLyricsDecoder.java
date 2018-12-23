@@ -45,7 +45,7 @@ public class NormalLyricsDecoder extends AbsLyricsDecoder {
                 }
             }
         }else{
-            System.err.println("the lyric file doesn't exist!");
+            Log.e("NormalLyricsDecoder","the lyric file doesn't exist!");
         }
     }
 
@@ -88,14 +88,14 @@ public class NormalLyricsDecoder extends AbsLyricsDecoder {
             Collections.sort(mTimeList);
             Collections.sort(mLyrics);//对歌词对象进行排序，2015.10.9发现有些歌词为了简单，出现了一句歌词有多个时间的情况，所以需要排序
         }catch(Exception e){
-            Log.e("readLyric","read lyric occur error!");
+            Log.e("NormalLyricsDecoder","read lyric occur error!");
             e.printStackTrace();
         }
     }
 
     public static String getFileEncode(File file) {
         if (!file.exists()) {
-            System.err.println("getFileEncode: file not exists!");
+            Log.e("NormalLyricsDecoder","getFileEncode: file not exists!");
             return null;
         }
         byte[] buf = new byte[4096];

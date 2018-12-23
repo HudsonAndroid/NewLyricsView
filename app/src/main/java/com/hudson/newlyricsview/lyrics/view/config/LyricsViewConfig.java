@@ -24,6 +24,7 @@ public class LyricsViewConfig {
     private AbsLyricsDecoder lyricsDecoder = new NormalLyricsDecoder();
     private ILyricsView emptyLyricsView;
     private Typeface typeface = Typeface.DEFAULT;
+    private float textSize = 15.0f;//sp
 
     /**
      * 注意内部可能会修改传入的值，使其变为奇数
@@ -67,6 +68,14 @@ public class LyricsViewConfig {
 
     public void setTypeface(Typeface typeface) {
         this.typeface = typeface;
+    }
+
+    public void setTextSize(float textSize) {
+        this.textSize = textSize;
+    }
+
+    public float getTextSize() {
+        return textSize;
     }
 
     public Typeface getTypeface() {

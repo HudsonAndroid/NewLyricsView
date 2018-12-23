@@ -22,6 +22,8 @@ public interface ILyricsView {
      */
     void setTypeface(Typeface typeface);
 
+    void setTextSize(float textSize);
+
     /**
      * 设置歌词个数，可能会被LyricsView修改
      * @param count 个数

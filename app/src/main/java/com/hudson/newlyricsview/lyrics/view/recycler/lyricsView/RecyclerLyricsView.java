@@ -143,6 +143,11 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         mAdapter.setLyricsTypeface(typeface);
     }
 
+    @Override
+    public void setTextSize(float textSize) {
+        mAdapter.setTextSize(textSize);
+    }
+
     /**
      * 初始状态下滑动到指定位置
      * @param initialPosition

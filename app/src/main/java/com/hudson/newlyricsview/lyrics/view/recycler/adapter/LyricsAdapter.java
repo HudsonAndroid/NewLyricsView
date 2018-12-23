@@ -32,6 +32,7 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     protected int mEndViewDimension;
     protected int mLyricsItemDimension;
     protected Typeface mLyricsTypeface;
+    protected float mTextSize;
 
     public LyricsAdapter(Context context){
         mContext = context;
@@ -45,6 +46,10 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     public void setLyricsTypeface(Typeface lyricsTypeface) {
         mLyricsTypeface = lyricsTypeface;
+    }
+
+    public void setTextSize(float textSize) {
+        mTextSize = textSize;
     }
 
     public void refreshList(List<Lyrics> datas){
@@ -79,6 +84,7 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         }else{//normalLyricsItem
             LyricsTextView item = new LyricsTextView(parent.getContext());
             item.setTypeface(mLyricsTypeface);
+            item.setTextSize(mTextSize);
             item.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mLyricsItemDimension));
             return new LyricsViewHolder(item);
         }
