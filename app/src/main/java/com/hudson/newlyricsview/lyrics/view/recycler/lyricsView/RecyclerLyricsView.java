@@ -1,12 +1,18 @@
 package com.hudson.newlyricsview.lyrics.view.recycler.lyricsView;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -48,6 +54,13 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     private int mFocusColor,mNormalColor;//高亢色、普通色
     private TextView mLastView;
     private long mLyricsTimeOffset;//歌词播放快进快退offset
+    //定位歌词相关
+    private static final float DEFAULT_FOCUS_LINE_WIDTH = 1.5f;//定位控件线宽度
+    protected static final int LOCATE_TRIANGLE_DIMENSION = 30;//px，垂直高度
+    protected static final int LOCATE_TRIANGLE_HALF_HEIGHT = 15;//px
+    protected RectF mLocateViewRegion;
+    protected Path mTrianglePath;
+    protected Paint mLocatePaint;
 
     public RecyclerLyricsView(Context context) {
         this(context, null);
@@ -67,6 +80,9 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         mFocusColor = DEFAULT_FOCUS_LYRICS_COLOR;
         mNormalColor = DEFAULT_NORMAL_LYRICS_COLOR;
         mLyricsCount = DEFAULT_LYRICS_COUNT;
+        mLocatePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mLocatePaint.setStrokeWidth(DEFAULT_FOCUS_LINE_WIDTH);
+        mLocatePaint.setColor(Color.GREEN);
         setAdapter(mAdapter);
     }
 
@@ -120,6 +136,16 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
                 (totalDimension + mItemDimension)/2,
                 (totalDimension - mItemDimension)/2);
         mAdapter.notifyDataSetChanged();
+        initTrianglePath(w,h);
+    }
+
+    protected void initTrianglePath(int w,int h) {
+        mTrianglePath = new Path();
+        mTrianglePath.moveTo(0,h/2 - LOCATE_TRIANGLE_HALF_HEIGHT);
+        mTrianglePath.lineTo(0,h/2 + LOCATE_TRIANGLE_HALF_HEIGHT);
+        mTrianglePath.lineTo(LOCATE_TRIANGLE_DIMENSION,h/2);
+        mTrianglePath.close();
+        mLocateViewRegion = new RectF(0,h/2 - LOCATE_TRIANGLE_HALF_HEIGHT,w,h/2 + LOCATE_TRIANGLE_HALF_HEIGHT);
     }
 
     protected int getTotalDimension(int w,int h){
@@ -292,6 +318,10 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
                 mHandler.removeMessages(MSG_ADJUST_LYRICS);
                 break;
             case MotionEvent.ACTION_UP:
+                if(mLocateViewRegion.contains(e.getX(),e.getY())){
+                    // TODO: 2018/12/23 锁定歌词
+                    Log.e("hudson","需要定位播放");
+                }
             case MotionEvent.ACTION_CANCEL:
                 mHandler.sendEmptyMessageDelayed(MSG_ADJUST_LYRICS,USER_INFECTION_TIME);
                 mIsInterrupt = false;
@@ -344,4 +374,24 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         super.onDetachedFromWindow();
         mLyricsSchedule.end();
     }
+
+    @Override
+    public void onDraw(Canvas c) {
+        super.onDraw(c);
+        if(mIsUserActive){
+            drawLocateView(c);
+        }
+    }
+
+    /**
+     * 绘制定位控件
+     * @param canvas
+     */
+    protected void drawLocateView(Canvas canvas){
+        int y = getHeight() / 2;
+        //绘制三角形
+        canvas.drawPath(mTrianglePath,mLocatePaint);
+        canvas.drawLine(0, y,getWidth(),y,mLocatePaint);
+    }
+
 }
