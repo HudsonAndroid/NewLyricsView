@@ -1,4 +1,4 @@
-package com.hudson.newlyricsview.lyrics.view.recycler;
+package com.hudson.newlyricsview.lyrics.view.recycler.lyricsView;
 
 import android.content.Context;
 import android.os.Handler;
@@ -17,6 +17,8 @@ import com.hudson.newlyricsview.lyrics.entity.Lyrics;
 import com.hudson.newlyricsview.lyrics.schedule.LyricsSchedule;
 import com.hudson.newlyricsview.lyrics.schedule.strategy.AbsScheduleWork;
 import com.hudson.newlyricsview.lyrics.view.ILyricsView;
+import com.hudson.newlyricsview.lyrics.view.recycler.CenterLayoutManager;
+import com.hudson.newlyricsview.lyrics.view.recycler.adapter.LyricsAdapter;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -32,7 +34,8 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     private static final int DEFAULT_LYRICS_COUNT = 5;
     private static final int DEFAULT_FOCUS_LYRICS_COLOR = 0xffff0000;
     private static final int DEFAULT_NORMAL_LYRICS_COLOR = 0xff000000;
-    private int mItemHeight;//px
+    protected int mItemDimension;//px
+    protected int mScrollExtend = 0;//px
     private LyricsSchedule mLyricsSchedule;
     private final List<Lyrics> mLyrics = new ArrayList<>();
     private LinearLayoutManager mLayoutManager;
@@ -56,14 +59,22 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     public RecyclerLyricsView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mLayoutManager = new CenterLayoutManager(getContext());
-        mLayoutManager.setOrientation(VERTICAL);
+        mLayoutManager.setOrientation(getOrientation());
         setLayoutManager(mLayoutManager);
         mHandler = new LyricsViewHandler(this);
-        mAdapter = new LyricsAdapter(getContext());
+        mAdapter = getLyricsAdapter();
         mFocusColor = DEFAULT_FOCUS_LYRICS_COLOR;
         mNormalColor = DEFAULT_NORMAL_LYRICS_COLOR;
         mLyricsCount = DEFAULT_LYRICS_COUNT;
         setAdapter(mAdapter);
+    }
+
+    protected int getOrientation(){
+        return VERTICAL;
+    }
+
+    protected LyricsAdapter getLyricsAdapter(){
+        return new LyricsAdapter(getContext());
     }
 
     /**
@@ -102,10 +113,16 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mItemHeight = h / mLyricsCount;
-        mAdapter.setViewHeight(mItemHeight,
-                (h + mItemHeight)/2,(h - mItemHeight)/2);
+        int totalDimension = getTotalDimension(w, h);
+        mItemDimension = totalDimension / mLyricsCount;
+        mAdapter.setViewHeight(mItemDimension,
+                (totalDimension + mItemDimension)/2,
+                (totalDimension - mItemDimension)/2);
         mAdapter.notifyDataSetChanged();
+    }
+
+    protected int getTotalDimension(int w,int h){
+        return h;
     }
 
     @Override
@@ -141,7 +158,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     }
 
     private void scrollToTarget(int curPosition){
-        int offset = getHeight() / 2 / mItemHeight;
+        int offset = getHeight() / 2 / mItemDimension;
         int firstVisiblePosition = mLayoutManager.findFirstVisibleItemPosition();
         int position;
         if(curPosition >= firstVisiblePosition){
@@ -191,8 +208,6 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         showToast(getResources().getString(R.string.lyrics_tips_backward,timeOffset+""));
     }
 
-    private int mScrollExtend = 0;
-
     @Override
     public void next() {
         mLastLyricsScrollTime = System.currentTimeMillis();
@@ -203,9 +218,9 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
             }else{
                 //如果前后两句歌词相差时间小于等于0，则会出现中间某次不会滑动的情形，因此此时叠加，并且不滑动
                 if(mLyricsSchedule.getNextLyricsTimeOffset() <= 0){
-                    mScrollExtend += mItemHeight;
+                    mScrollExtend += mItemDimension;
                 }else{
-                    smoothScrollBy(0,mItemHeight + mScrollExtend);
+                    smoothScrollToNext();
                     mScrollExtend = 0;
                 }
             }
@@ -213,6 +228,10 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         int curPosition = mLyricsSchedule.getCurPosition();
         mAdapter.setCurPosition(curPosition);
         focusCurrentItem(curPosition);
+    }
+
+    protected void smoothScrollToNext(){
+        smoothScrollBy(0, mItemDimension + mScrollExtend);
     }
 
     /**

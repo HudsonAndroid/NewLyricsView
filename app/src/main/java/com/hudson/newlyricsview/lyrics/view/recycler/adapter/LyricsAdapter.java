@@ -1,4 +1,4 @@
-package com.hudson.newlyricsview.lyrics.view.recycler;
+package com.hudson.newlyricsview.lyrics.view.recycler.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -22,23 +22,23 @@ import java.util.List;
  */
 
 public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
-    private static final int TYPE_TOP = 1;
-    private static final int TYPE_BOTTOM = 2;
-    protected final List<Lyrics> mDatas = new ArrayList<>();
+    protected static final int TYPE_TOP = 1;
+    protected static final int TYPE_BOTTOM = 2;
+    private final List<Lyrics> mDatas = new ArrayList<>();
     protected Context mContext;
     private int mCurPosition;
-    private int mTopViewHeight;
-    private int mBottomViewHeight;
-    private int mLyricsItemHeight;
+    protected int mFirstViewDimension;
+    protected int mEndViewDimension;
+    protected int mLyricsItemDimension;
 
-    protected LyricsAdapter(Context context){
+    public LyricsAdapter(Context context){
         mContext = context;
     }
 
-    public void setViewHeight(int itemHeight,int topViewHeight,int bottomViewHeight){
-        mLyricsItemHeight = itemHeight;
-        mTopViewHeight = topViewHeight;
-        mBottomViewHeight = bottomViewHeight;
+    public void setViewHeight(int itemDimension,int firstViewDimension,int endViewDimension){
+        mLyricsItemDimension = itemDimension;
+        mFirstViewDimension = firstViewDimension;
+        mEndViewDimension = endViewDimension;
     }
 
     public void refreshList(List<Lyrics> datas){
@@ -64,15 +64,15 @@ public class LyricsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if(viewType == TYPE_TOP){//headerView
             View itemView = new TextView(parent.getContext());
-            itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mTopViewHeight));
+            itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mFirstViewDimension));
             return new EmptyViewHolder(itemView);
         }else if(viewType == TYPE_BOTTOM){//bottomView
             View itemView = new TextView(parent.getContext());
-            itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mBottomViewHeight));
+            itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mEndViewDimension));
             return new EmptyViewHolder(itemView);
         }else{//normalLyricsItem
             View item = new LyricsTextView(parent.getContext());
-            item.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mLyricsItemHeight));
+            item.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mLyricsItemDimension));
             return new LyricsViewHolder(item);
         }
     }

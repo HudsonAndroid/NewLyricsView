@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 
 import com.hudson.newlyricsview.lyrics.LyricsController;
 import com.hudson.newlyricsview.lyrics.view.config.LyricsViewConfig;
+import com.hudson.newlyricsview.lyrics.view.style.LyricsViewStyle;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         mLyricsController = new LyricsController(this);
         LyricsViewConfig config =
                 new LyricsViewConfig()
-                    .setLyricsCount(9);
+                        .setLyricsViewStyle(LyricsViewStyle.VerticalNormalStyle)
+                        .setLyricsCount(9);
         mLyricsController.init(config);
         mEtMusic = findViewById(R.id.et_music);
         mContainer = findViewById(R.id.rl_container);
