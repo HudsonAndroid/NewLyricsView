@@ -31,7 +31,7 @@ public class LyricsController{
         mNonEmptyLyricsView = mLyricsView;
         mLyricsDecoder = config.getLyricsDecoder();
         mNonEmptyLyricsView.setLyricsCount(config.getLyricsCount());//内部可能会修改该值
-        mNonEmptyLyricsView.setFocusLyricsColor(config.getFoucsColor());
+        mNonEmptyLyricsView.setFocusLyricsColor(config.getFocusColor());
         mNonEmptyLyricsView.setNormalLyricsColor(config.getNormalColor());
         mNonEmptyLyricsView.setScheduleType(config.getSchedulePolicy());
         mNonEmptyLyricsView.setTypeface(config.getTypeface());

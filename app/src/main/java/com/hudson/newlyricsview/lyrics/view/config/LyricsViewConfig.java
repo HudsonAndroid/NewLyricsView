@@ -16,14 +16,14 @@ import com.hudson.newlyricsview.lyrics.view.style.LyricsViewStyle;
  * Created by Hudson on 2018/12/23.
  */
 public class LyricsViewConfig {
-    int lyricsCount;
-    int foucsColor;
-    int normalColor;
-    AbsScheduleWork schedulePolicy = new HandlerStrategy();
-    LyricsViewStyle lyricsViewStyle = LyricsViewStyle.VerticalNormalStyle;
-    AbsLyricsDecoder lyricsDecoder = new NormalLyricsDecoder();
-    ILyricsView emptyLyricsView;
-    Typeface typeface = Typeface.DEFAULT;
+    private int lyricsCount;
+    private int focusColor;
+    private int normalColor;
+    private AbsScheduleWork schedulePolicy = new HandlerStrategy();
+    private LyricsViewStyle lyricsViewStyle = LyricsViewStyle.VerticalNormalStyle;
+    private AbsLyricsDecoder lyricsDecoder = new NormalLyricsDecoder();
+    private ILyricsView emptyLyricsView;
+    private Typeface typeface = Typeface.DEFAULT;
 
     /**
      * 注意内部可能会修改传入的值，使其变为奇数
@@ -35,8 +35,8 @@ public class LyricsViewConfig {
         return this;
     }
 
-    public LyricsViewConfig setFoucsColor(int foucsColor) {
-        this.foucsColor = foucsColor;
+    public LyricsViewConfig setFocusColor(int focusColor) {
+        this.focusColor = focusColor;
         return this;
     }
 
@@ -88,8 +88,8 @@ public class LyricsViewConfig {
         return lyricsCount;
     }
 
-    public int getFoucsColor() {
-        return foucsColor;
+    public int getFocusColor() {
+        return focusColor;
     }
 
     public int getNormalColor() {
