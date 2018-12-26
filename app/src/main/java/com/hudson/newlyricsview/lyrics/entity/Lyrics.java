@@ -31,7 +31,7 @@ public class Lyrics implements Comparable<Lyrics>{
     }
 
     public void setLrcContent(String lrcContent) {
-        mLrcContent = lrcContent;
+        mLrcContent = lrcContent.trim();
     }
 
     public long getLrcProgressTime() {
