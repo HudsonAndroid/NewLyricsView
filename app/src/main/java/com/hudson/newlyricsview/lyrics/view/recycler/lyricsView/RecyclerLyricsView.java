@@ -54,6 +54,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     private int mFocusColor,mNormalColor;//高亢色、普通色
     private TextView mLastView;
     private long mLyricsTimeOffset;//歌词播放快进快退offset
+    private int mHalfDimensionItems;//一半控件尺寸容纳的歌词数
     //定位歌词相关
     private static final float DEFAULT_FOCUS_LINE_WIDTH = 1.5f;//定位控件线宽度
     protected static final int LOCATE_TRIANGLE_DIMENSION = 30;//px，垂直高度
@@ -132,6 +133,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         super.onSizeChanged(w, h, oldw, oldh);
         int totalDimension = getTotalDimension(w, h);
         mItemDimension = totalDimension / mLyricsCount;
+        mHalfDimensionItems = totalDimension / 2 / mItemDimension;
         mAdapter.setViewHeight(mItemDimension,
                 (totalDimension + mItemDimension)/2,
                 (totalDimension - mItemDimension)/2);
@@ -139,6 +141,11 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         initTrianglePath(w,h);
     }
 
+    /**
+     * 定位歌词的三角形path初始化
+     * @param w
+     * @param h
+     */
     protected void initTrianglePath(int w,int h) {
         mTrianglePath = new Path();
         mTrianglePath.moveTo(0,h/2 - LOCATE_TRIANGLE_HALF_HEIGHT);
@@ -148,6 +155,12 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         mLocateViewRegion = new RectF(0,h/2 - LOCATE_TRIANGLE_HALF_HEIGHT,w,h/2 + LOCATE_TRIANGLE_HALF_HEIGHT);
     }
 
+    /**
+     * 获取歌词的总尺寸，可能是水平或者竖直
+     * @param w 控件水平宽度，参考
+     * @param h 控件竖直高度，参考
+     * @return
+     */
     protected int getTotalDimension(int w,int h){
         return h;
     }
@@ -195,13 +208,12 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     }
 
     private void scrollToTarget(int curPosition){
-        int offset = getTotalDimension(getWidth(),getHeight()) / 2 / mItemDimension;
         int firstVisiblePosition = mLayoutManager.findFirstVisibleItemPosition();
         int position;
         if(curPosition >= firstVisiblePosition){
-            position = curPosition + offset;
+            position = curPosition + mHalfDimensionItems;
         }else{
-            position = curPosition < offset ?curPosition:curPosition - offset;
+            position = curPosition < mHalfDimensionItems ?curPosition:curPosition - mHalfDimensionItems;
         }
         mLayoutManager.scrollToPosition(position+mAdapter.getLyricsIndexOffset());
         mAdapter.setCurPosition(curPosition);
@@ -248,7 +260,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     @Override
     public void next() {
         mLastLyricsScrollTime = System.currentTimeMillis();
-        if(!mIsUserActive){
+        if(!mIsUserActive && !mIsInterrupt){
             if(isNeedAdjust){
                 isNeedAdjust = false;
                 scrollToCenter();
@@ -261,6 +273,8 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
                     mScrollExtend = 0;
                 }
             }
+        }else if(mIsInterrupt){//如果是down事件导致无法滚动，那么up之后下句即开始调整
+            isNeedAdjust = true;
         }
         int curPosition = mLyricsSchedule.getCurPosition();
         mAdapter.setCurPosition(curPosition);
@@ -313,14 +327,20 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()){
             case MotionEvent.ACTION_DOWN:
-                mIsUserActive = true;
                 mIsInterrupt = true;
                 mHandler.removeMessages(MSG_ADJUST_LYRICS);
                 break;
+            case MotionEvent.ACTION_MOVE:
+                mIsUserActive = true;
+                break;
             case MotionEvent.ACTION_UP:
                 if(mLocateViewRegion.contains(e.getX(),e.getY())){
-                    // TODO: 2018/12/23 锁定歌词
-                    Log.e("hudson","需要定位播放");
+                    int centerPosition = mLayoutManager.findFirstVisibleItemPosition() + mHalfDimensionItems - mAdapter.getLyricsIndexOffset();
+                    if(centerPosition >=0 && centerPosition < mLyrics.size()){
+                        Lyrics lyrics = mLyrics.get(centerPosition);
+                        // TODO: 2018/12/23 锁定歌词
+                        Log.e("hudson","中间歌词是"+lyrics.getLrcContent());
+                    }
                 }
             case MotionEvent.ACTION_CANCEL:
                 mHandler.sendEmptyMessageDelayed(MSG_ADJUST_LYRICS,USER_INFECTION_TIME);
@@ -334,7 +354,6 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
 
     private void adjustLyrics(){
         if(!mIsInterrupt){
-            mIsUserActive = false;
             long offset = mLyricsSchedule.getNextLyricsTimeOffset();
             long passBy = System.currentTimeMillis() - mLastLyricsScrollTime;
             if(mLyricsSchedule.isWorkRunning() &&
@@ -344,6 +363,8 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
                 scrollToCenter();
             }
         }
+        mIsUserActive = false;
+        invalidate();//刷新定位线
     }
     private long mLastLyricsScrollTime;
     private boolean isNeedAdjust = false;
@@ -351,7 +372,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     private static class LyricsViewHandler extends Handler {
         private WeakReference<RecyclerLyricsView> mLyricsView;
 
-        public LyricsViewHandler(RecyclerLyricsView lyricsView){
+        LyricsViewHandler(RecyclerLyricsView lyricsView){
             mLyricsView = new WeakReference<>(lyricsView);
         }
 
