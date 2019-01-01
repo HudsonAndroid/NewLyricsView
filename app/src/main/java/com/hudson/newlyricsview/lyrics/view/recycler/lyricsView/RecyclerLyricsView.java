@@ -38,6 +38,8 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     private static final int USER_INFECTION_TIME = 5000;//ms
     private static final int ADJUST_SCROLL_MIN_TIME = 1000;//ms
     private static final int MSG_ADJUST_LYRICS = 1;
+    private static final int MIN_LYRICS_COUNT = 3;//最少歌词数3个
+    private static final int MAX_LYRICS_COUNT = 9;//最多歌词数9个
     private static final int DEFAULT_LYRICS_COUNT = 5;
     private static final int DEFAULT_FOCUS_LYRICS_COLOR = 0xffff0000;
     private static final int DEFAULT_NORMAL_LYRICS_COLOR = 0xff000000;
@@ -58,7 +60,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     //定位歌词相关
     private static final float DEFAULT_FOCUS_LINE_WIDTH = 1.5f;//定位控件线宽度
     protected static final int LOCATE_TRIANGLE_DIMENSION = 30;//px，垂直高度
-    protected static final int LOCATE_TRIANGLE_HALF_HEIGHT = 30;//px
+    protected static final int LOCATE_TRIANGLE_HALF_HEIGHT = 20;//px
     protected RectF mLocateViewRegion;
     protected Path mTrianglePath;
     protected Paint mLocatePaint;
@@ -106,6 +108,8 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         if(count<=0){
             return DEFAULT_LYRICS_COUNT;
         }
+        count = count < MIN_LYRICS_COUNT ? MIN_LYRICS_COUNT : count;
+        count = count > MAX_LYRICS_COUNT ? MAX_LYRICS_COUNT : count;
         mLyricsCount = count/2*2+1;
         return mLyricsCount;
     }
@@ -181,6 +185,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         int initialPosition = mLyricsSchedule.getCurPosition();
         initStartScrollPosition(initialPosition);
         mAdapter.setCurPosition(initialPosition);
+        mLyricsTimeOffset = 0;
     }
 
     @Override
@@ -234,7 +239,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
 
     @Override
     public void play(long currentProgress) {
-        mLyricsSchedule.play(currentProgress);
+        mLyricsSchedule.play(currentProgress + mLyricsTimeOffset);
         initStartScrollPosition(mLyricsSchedule.getCurPosition());
     }
 
@@ -314,7 +319,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
 
     @Override
     public void pause(long pauseTime) {
-        mLyricsSchedule.pause(pauseTime);
+        mLyricsSchedule.pause(pauseTime + mLyricsTimeOffset);
         initStartScrollPosition(mLyricsSchedule.getCurPosition());
     }
 
