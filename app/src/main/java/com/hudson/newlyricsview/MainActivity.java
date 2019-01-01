@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.hudson.newlyricsview.lyrics.LyricsController;
 import com.hudson.newlyricsview.lyrics.view.config.LyricsViewConfig;
+import com.hudson.newlyricsview.lyrics.view.locateProgress.ILocateProgressListener;
 import com.hudson.newlyricsview.lyrics.view.style.LyricsViewStyle;
 
 import java.io.FileNotFoundException;
@@ -41,9 +42,22 @@ public class MainActivity extends AppCompatActivity {
         mLyricsController = new LyricsController(this);
         LyricsViewConfig config =
                 new LyricsViewConfig()
-                        .setLyricsViewStyle(LyricsViewStyle.HorizontalStyle)
+                        .setLyricsViewStyle(LyricsViewStyle.VerticalNormalStyle)
                         .setLyricsCount(9);
         mLyricsController.init(config);
+        mLyricsController.setOnLocateCenterListener(new ILocateProgressListener() {
+            @Override
+            public void onLocateCenter(long progress) {
+                if(mediaPlayer != null){
+                    mediaPlayer.seekTo((int)progress);
+                    if(mediaPlayer.isPlaying()){
+                        mLyricsController.play(progress);
+                    }else{
+                        mLyricsController.pause(progress);
+                    }
+                }
+            }
+        });
         mEtMusic = findViewById(R.id.et_music);
         mContainer = findViewById(R.id.rl_container);
         musicPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/donglingMusic/download/";

@@ -73,6 +73,7 @@ public abstract class AbsScheduleWork {
      */
     public void pause(long pauseTime){
         mStartTime = pauseTime;
+        mCurrentIndex = getCurrentIndex(pauseTime);
         mIsRunning = false;
     }
 

@@ -7,6 +7,7 @@ import com.hudson.newlyricsview.lyrics.decode.AbsLyricsDecoder;
 import com.hudson.newlyricsview.lyrics.entity.Lyrics;
 import com.hudson.newlyricsview.lyrics.view.ILyricsView;
 import com.hudson.newlyricsview.lyrics.view.config.LyricsViewConfig;
+import com.hudson.newlyricsview.lyrics.view.locateProgress.ILocateProgressListener;
 
 import java.util.List;
 
@@ -56,6 +57,10 @@ public class LyricsController{
         }
     }
 
+    public void setOnLocateCenterListener(ILocateProgressListener listener){
+        mLyricsView.setLocateCenterListener(listener);
+    }
+
     /**
      * 播放
      */
@@ -65,10 +70,10 @@ public class LyricsController{
 
     /**
      * 从某个位置开始播放
-     * @param position
+     * @param progress
      */
-    public void play(int position) {
-        mLyricsView.play(position);
+    public void play(long progress) {
+        mLyricsView.play(progress);
     }
 
     public Lyrics getCurLyrics() {

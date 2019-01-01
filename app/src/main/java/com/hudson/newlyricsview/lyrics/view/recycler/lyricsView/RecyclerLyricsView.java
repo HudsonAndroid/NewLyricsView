@@ -12,7 +12,6 @@ import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -24,6 +23,7 @@ import com.hudson.newlyricsview.lyrics.entity.Lyrics;
 import com.hudson.newlyricsview.lyrics.schedule.LyricsSchedule;
 import com.hudson.newlyricsview.lyrics.schedule.strategy.AbsScheduleWork;
 import com.hudson.newlyricsview.lyrics.view.ILyricsView;
+import com.hudson.newlyricsview.lyrics.view.locateProgress.ILocateProgressListener;
 import com.hudson.newlyricsview.lyrics.view.recycler.CenterLayoutManager;
 import com.hudson.newlyricsview.lyrics.view.recycler.adapter.LyricsAdapter;
 
@@ -58,10 +58,11 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     //定位歌词相关
     private static final float DEFAULT_FOCUS_LINE_WIDTH = 1.5f;//定位控件线宽度
     protected static final int LOCATE_TRIANGLE_DIMENSION = 30;//px，垂直高度
-    protected static final int LOCATE_TRIANGLE_HALF_HEIGHT = 15;//px
+    protected static final int LOCATE_TRIANGLE_HALF_HEIGHT = 30;//px
     protected RectF mLocateViewRegion;
     protected Path mTrianglePath;
     protected Paint mLocatePaint;
+    private ILocateProgressListener mListener;
 
     public RecyclerLyricsView(Context context) {
         this(context, null);
@@ -131,7 +132,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        int totalDimension = getTotalDimension(w, h);
+        int totalDimension = getDimension(w, h);
         mItemDimension = totalDimension / mLyricsCount;
         mHalfDimensionItems = totalDimension / 2 / mItemDimension;
         mAdapter.setViewHeight(mItemDimension,
@@ -156,13 +157,18 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     }
 
     /**
-     * 获取歌词的总尺寸，可能是水平或者竖直
+     * 获取尺寸，可能是水平或者竖直
      * @param w 控件水平宽度，参考
      * @param h 控件竖直高度，参考
      * @return
      */
-    protected int getTotalDimension(int w,int h){
+    protected int getDimension(int w, int h){
         return h;
+    }
+
+    @Override
+    public void setLocateCenterListener(ILocateProgressListener listener) {
+        mListener = listener;
     }
 
     @Override
@@ -207,14 +213,16 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
         }
     }
 
+    // TODO: 2019/1/1 问题：如果定位选中了歌词的倒数第四个，定位时会出现滑动到底部的异常问题，其他情况均不会，问题原因未知
     private void scrollToTarget(int curPosition){
         int firstVisiblePosition = mLayoutManager.findFirstVisibleItemPosition();
         int position;
-        if(curPosition >= firstVisiblePosition){
+        if(curPosition > firstVisiblePosition){
             position = curPosition + mHalfDimensionItems;
         }else{
-            position = curPosition < mHalfDimensionItems ?curPosition:curPosition - mHalfDimensionItems;
+            position = curPosition < mHalfDimensionItems ? curPosition:curPosition - mHalfDimensionItems;
         }
+//        Log.e("hudson","需要滑动到的位置"+(position+mAdapter.getLyricsIndexOffset()));
         mLayoutManager.scrollToPosition(position+mAdapter.getLyricsIndexOffset());
         mAdapter.setCurPosition(curPosition);
         focusCurrentItem(curPosition);
@@ -307,6 +315,7 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
     @Override
     public void pause(long pauseTime) {
         mLyricsSchedule.pause(pauseTime);
+        initStartScrollPosition(mLyricsSchedule.getCurPosition());
     }
 
     @Override
@@ -323,10 +332,13 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
                 mLyricsSchedule.getCurPosition() + mAdapter.getLyricsIndexOffset());
     }
 
+    private boolean mIsLocateDown = false;
+
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()){
             case MotionEvent.ACTION_DOWN:
+                mIsLocateDown = mLocateViewRegion.contains(e.getX(),e.getY());
                 mIsInterrupt = true;
                 mHandler.removeMessages(MSG_ADJUST_LYRICS);
                 break;
@@ -334,12 +346,19 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
                 mIsUserActive = true;
                 break;
             case MotionEvent.ACTION_UP:
-                if(mLocateViewRegion.contains(e.getX(),e.getY())){
-                    int centerPosition = mLayoutManager.findFirstVisibleItemPosition() + mHalfDimensionItems - mAdapter.getLyricsIndexOffset();
+                //如果down和up都是在locateView上，则认定为点击了locateView
+                if(mIsLocateDown && mLocateViewRegion.contains(e.getX(),e.getY())){
+                    int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+                    int centerItemOffset = getCenterItemOffset(firstVisibleItemPosition);
+                    int centerPosition = firstVisibleItemPosition - mAdapter.getLyricsIndexOffset() + centerItemOffset;
+                    if(firstVisibleItemPosition >= mAdapter.getLyricsIndexOffset()){
+                        centerPosition += mHalfDimensionItems;
+                    }
                     if(centerPosition >=0 && centerPosition < mLyrics.size()){
                         Lyrics lyrics = mLyrics.get(centerPosition);
-                        // TODO: 2018/12/23 锁定歌词
-                        Log.e("hudson","中间歌词是"+lyrics.getLrcContent());
+                        if(mListener != null){
+                            mListener.onLocateCenter(lyrics.getLrcProgressTime());
+                        }
                     }
                 }
             case MotionEvent.ACTION_CANCEL:
@@ -350,6 +369,23 @@ public class RecyclerLyricsView extends RecyclerView implements ILyricsView {
                 break;
         }
         return super.onTouchEvent(e);
+    }
+
+    private int getCenterItemOffset(int firstVisiblePosition){
+        View firstVisibleView = mLayoutManager.findViewByPosition(firstVisiblePosition);
+        if(firstVisibleView != null){
+            int dimension = getDimension(firstVisibleView.getRight(), firstVisibleView.getBottom());
+            int extendCount = 0;
+            if(firstVisiblePosition == mAdapter.getLyricsIndexOffset() - 1){
+                extendCount = mHalfDimensionItems - dimension / mItemDimension;
+            }
+            dimension = dimension % mItemDimension;
+            if(dimension < mItemDimension/2){
+                extendCount ++;
+            }
+            return extendCount;
+        }
+        return 0;
     }
 
     private void adjustLyrics(){

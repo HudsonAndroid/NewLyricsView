@@ -5,6 +5,7 @@ import android.view.View;
 
 import com.hudson.newlyricsview.lyrics.entity.Lyrics;
 import com.hudson.newlyricsview.lyrics.schedule.strategy.AbsScheduleWork;
+import com.hudson.newlyricsview.lyrics.view.locateProgress.ILocateProgressListener;
 
 import java.util.List;
 
@@ -13,6 +14,8 @@ import java.util.List;
  * Created by hpz on 2018/12/6.
  */
 public interface ILyricsView {
+
+    void setLocateCenterListener(ILocateProgressListener listener);
 
     void setLyrics(List<Lyrics> lyrics,List<Long> timeList,long startTime);
 

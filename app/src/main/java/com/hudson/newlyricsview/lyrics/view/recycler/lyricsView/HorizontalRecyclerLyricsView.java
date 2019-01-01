@@ -31,7 +31,7 @@ public class HorizontalRecyclerLyricsView extends RecyclerLyricsView {
     }
 
     @Override
-    protected int getTotalDimension(int w, int h) {
+    protected int getDimension(int w, int h) {
         return w;
     }
 

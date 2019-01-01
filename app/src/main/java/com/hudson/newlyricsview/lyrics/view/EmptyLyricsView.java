@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.hudson.newlyricsview.lyrics.entity.Lyrics;
 import com.hudson.newlyricsview.lyrics.schedule.strategy.AbsScheduleWork;
+import com.hudson.newlyricsview.lyrics.view.locateProgress.ILocateProgressListener;
 
 import java.util.List;
 
@@ -28,6 +29,11 @@ public class EmptyLyricsView extends TextView implements ILyricsView {
         super(context, attrs, defStyle);
         setText("找不到歌词");
         setGravity(Gravity.CENTER);
+    }
+
+    @Override
+    public void setLocateCenterListener(ILocateProgressListener listener) {
+
     }
 
     @Override
