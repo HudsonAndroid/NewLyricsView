@@ -7,7 +7,7 @@
 #### 歌词水平和数值样式展示
 #### 其他基础功能
 ## 功能截图
-<img width="320" height="576" src="https://github.com/HudsonAndroid/NewLyricsView/raw/master/images/Screenshot_1.png"/>
+<img width="1000" height="1169" src="https://github.com/HudsonAndroid/NewLyricsView/raw/master/images/Screenshot_1.png"/>
 <img width="320" height="576" src="https://github.com/HudsonAndroid/NewLyricsView/raw/master/images/Screenshot_2.png"/>
 <img width="320" height="576" src="https://github.com/HudsonAndroid/NewLyricsView/raw/master/images/Screenshot_3.png"/>
 <img width="320" height="576" src="https://github.com/HudsonAndroid/NewLyricsView/raw/master/images/Screenshot_4.png"/>
