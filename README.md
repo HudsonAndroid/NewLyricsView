@@ -1,7 +1,7 @@
 # NewLyricsView
 歌词控件LyricsView
 # 设计说明（UML类图，部分内容仅简单说明）
-<img width="1000" height="1169" src="https://github.com/HudsonAndroid/NewLyricsView/raw/master/images/LyricsView%20UML.png"/>
+<img src="https://github.com/HudsonAndroid/NewLyricsView/raw/master/images/LyricsView%20UML.png"/>
 # 功能说明
 #### 歌词快进快退
 #### 歌词水平和数值样式展示
