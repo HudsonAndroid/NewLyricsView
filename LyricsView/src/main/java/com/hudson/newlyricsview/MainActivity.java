@@ -24,14 +24,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * this is a page for LyricsView usage sample.
+ */
 public class MainActivity extends AppCompatActivity {
-
-    public LyricsController mLyricsController;
+    private LyricsController mLyricsController;
     private EditText mEtMusic;
     private MediaPlayer mediaPlayer;
     private String musicPath;
     private String lyricsPath;
-    public RelativeLayout mContainer;
+    private RelativeLayout mContainer;
     private boolean isStart = false;
 
     @Override
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         mLyricsController = new LyricsController(this);
         LyricsViewConfig config =
                 new LyricsViewConfig()
-                        .setLyricsViewStyle(LyricsViewStyle.VerticalNormalStyle)
+                        .setLyricsViewStyle(LyricsViewStyle.HorizontalStyle)
                         .setLyricsCount(9);
         mLyricsController.init(config);
         mLyricsController.setOnLocateCenterListener(new ILocateProgressListener() {
@@ -60,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
         });
         mEtMusic = findViewById(R.id.et_music);
         mContainer = findViewById(R.id.rl_container);
+        //[sample] set the music source path,media player will find musics from this directory
         musicPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/donglingMusic/download/";
+        //[sample] set the lyrics source path,lyrics view will find lyrics file from this directory
         lyricsPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/donglingMusic/Lyrics/";
     }
 
@@ -121,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 请求权限并初始化数据库
+     * request permission
      */
     public void requestPermission(){
         ArrayList<String> permissions = new ArrayList<>();
