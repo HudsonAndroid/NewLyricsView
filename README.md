@@ -3,7 +3,7 @@
 # 设计说明（UML类图，部分内容仅简单说明）
 <img src="https://github.com/HudsonAndroid/NewLyricsView/raw/master/images/LyricsView%20UML.png"/>
 
-（图片位置  /images/LyricsView UML.png）
+（原图位置  <a href="https://github.com/HudsonAndroid/NewLyricsView/blob/master/images/LyricsView%20UML.png">/images/LyricsView UML.png</a>）
 # 功能说明
 
 #### 歌词快进快退
